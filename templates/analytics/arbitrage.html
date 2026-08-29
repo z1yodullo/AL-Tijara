@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Арбитраж - Al-Tijara{% endblock %}
+
+{% block content %}
+<div class="arbitrage">
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h2 class="card__title">Мониторинг арбитража</h2>
+            <a href="{% url 'analytics:arbitrage' %}" class="btn btn--secondary btn--sm">Обновить</a>
+        </div>
+    </div>
+
+    {% if triangular %}
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h3 class="card__title">Треугольный арбитраж</h3>
+        </div>
+        <div class="card__body">
+            <p>Маршрут: <strong>{{ triangular.route }}</strong></p>
+            <p>Начало: <strong class="font-mono">${{ triangular.start_amount }}</strong></p>
+            <p>Конец: <strong class="font-mono {% if triangular.profit_pct > 0 %}text-success{% elif triangular.profit_pct < 0 %}text-danger{% endif %}">${{ triangular.final_amount }}</strong></p>
+            <p>Прибыль: <strong class="font-mono {% if triangular.profit_pct > 0 %}text-success{% elif triangular.profit_pct < 0 %}text-danger{% endif %}">{{ triangular.profit_pct }}%</strong></p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">Возможности спреда</h3>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Пара А</th>
+                        <th>Пара Б</th>
+                        <th>Кросс пара</th>
+                        <th>Цена А</th>
+                        <th>Расчётная цена</th>
+                        <th>Спред</th>
+                        <th>Направление</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for opp in opportunities %}
+                    <tr>
+                        <td class="font-mono">{{ opp.pair_a }}</td>
+                        <td class="font-mono">{{ opp.pair_b }}</td>
+                        <td class="font-mono">{{ opp.pair_cross }}</td>
+                        <td class="font-mono">{{ opp.price_a }}</td>
+                        <td class="font-mono">{{ opp.implied_price }}</td>
+                        <td class="font-mono {% if opp.spread_pct > 0 %}text-success{% else %}text-danger{% endif %}">
+                            {{ opp.spread_pct }}%
+                        </td>
+                        <td>
+                            <span class="badge badge--{% if opp.spread_pct > 0 %}success{% else %}danger{% endif %}">
+                                {{ opp.direction }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-muted">Арбитражных возможностей сейчас нет.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}P&L График - Al-Tijara{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="pnl">
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h2 class="card__title">Прибыли и убытки</h2>
+        </div>
+        <div class="card__body">
+            <div class="card-grid">
+                <div>
+                    <p class="text-secondary">Начальный капитал</p>
+                    <p class="font-mono">{{ initial_value }} USDT</p>
+                </div>
+                <div>
+                    <p class="text-secondary">Текущая стоимость</p>
+                    <p class="font-mono">{{ current_value }} USDT</p>
+                </div>
+                <div>
+                    <p class="text-secondary">P&L</p>
+                    <p class="font-mono {% if pnl > 0 %}text-success{% elif pnl < 0 %}text-danger{% endif %}">
+                        {{ pnl }} USDT ({{ pnl_pct }}%)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">Стоимость портфеля во времени</h3>
+        </div>
+        <div class="card__body">
+            <canvas id="pnlChart" height="300"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartData = {{ chart_data|safe }};
+    const ctx = document.getElementById('pnlChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.map(d => d.timestamp),
+            datasets: [{
+                label: 'Стоимость портфеля (USDT)',
+                data: chartData.map(d => d.value),
+                borderColor: '#f0b90b',
+                backgroundColor: 'rgba(240, 185, 11, 0.1)',
+                fill: true,
+                tension: 0.1,
+                pointRadius: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#848e9c' },
+                },
+                y: {
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#848e9c' },
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

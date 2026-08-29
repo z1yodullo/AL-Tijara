@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Главная - Al-Tijara{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h2 class="card__title">Портфель</h2>
+        </div>
+        <div class="card__body">
+            <p>Общая стоимость: <strong class="font-mono">{{ total_value }} USDT</strong></p>
+        </div>
+    </div>
+
+    <div class="card-grid mb-lg">
+        {% for asset, amount in balance.items %}
+        <div class="card">
+            <div class="card__header">
+                <span class="card__subtitle">{{ asset }}</span>
+            </div>
+            <div class="card__body">
+                <span class="font-mono">{{ amount }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h3 class="card__title">Рыночные цены</h3>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Пара</th>
+                        <th>Цена</th>
+                        <th>Изм. 24ч</th>
+                        <th>Объём</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tickers %}
+                    <tr>
+                        <td class="font-mono">{{ t.symbol }}</td>
+                        <td class="font-mono">{{ t.price }}</td>
+                        <td class="font-mono {% if t.change > 0 %}text-success{% elif t.change < 0 %}text-danger{% endif %}">
+                            {{ t.change }}%
+                        </td>
+                        <td class="font-mono text-secondary">{{ t.volume }}</td>
+                        <td>
+                            <a href="{% url 'trading:trading' %}?symbol={{ t.symbol }}" class="btn btn--primary btn--sm">Торговать</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">Открытые ордера</h3>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Пара</th>
+                            <th>Сторона</th>
+                            <th>Тип</th>
+                            <th>Цена</th>
+                            <th>Кол-во</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in open_orders %}
+                        <tr>
+                            <td class="font-mono">{{ o.symbol }}</td>
+                            <td><span class="badge badge--{% if o.side == 'BUY' %}success{% else %}danger{% endif %}">{% if o.side == 'BUY' %}Покупка{% else %}Продажа{% endif %}</span></td>
+                            <td>{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
+                            <td class="font-mono">{{ o.price|default:"-" }}</td>
+                            <td class="font-mono">{{ o.quantity }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-muted">Нет открытых ордеров</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">Последние сделки</h3>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Пара</th>
+                            <th>Сторона</th>
+                            <th>Цена</th>
+                            <th>Кол-во</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in recent_trades %}
+                        <tr>
+                            <td class="font-mono">{{ o.symbol }}</td>
+                            <td><span class="badge badge--{% if o.side == 'BUY' %}success{% else %}danger{% endif %}">{% if o.side == 'BUY' %}Покупка{% else %}Продажа{% endif %}</span></td>
+                            <td class="font-mono">{{ o.price }}</td>
+                            <td class="font-mono">{{ o.quantity }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-muted">Пока нет сделок</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

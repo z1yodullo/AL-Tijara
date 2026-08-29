@@ -1,0 +1,385 @@
+/* ==========================================================================
+   trading.css — ТОРГОВЛЯ
+   Ордера, форма создания сделки, активные позиции, стоп-лосс/тейк-профит
+   Подключается на страницах templates/trading/*
+   ========================================================================== */
+
+/* ---------- Общий layout торговой страницы (spot.html / futures.html) ---------- */
+.trading-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr 320px;
+    gap: var(--spacing-md);
+    align-items: start;
+}
+
+.trading-layout__chart {
+    grid-column: 2;
+}
+
+.trading-layout__book {
+    grid-column: 3;
+}
+
+.trading-layout__pairs {
+    grid-column: 1;
+}
+
+.trading-layout__panel {
+    grid-column: 1 / -1;
+}
+
+/* ---------- Переключатель режима (Spot / Margin / Futures) ---------- */
+.mode-switch {
+    display: flex;
+    gap: 2px;
+    background-color: var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    padding: 2px;
+    width: fit-content;
+    margin-bottom: var(--spacing-md);
+}
+
+.mode-switch__item {
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    border-radius: 3px;
+}
+
+.mode-switch__item.active {
+    background-color: var(--bg-hover);
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* ---------- Форма создания ордера (order_create.html) ---------- */
+.order-form {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+}
+
+.order-form__side-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+.order-form__side-btn {
+    padding: 10px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: var(--border-radius-md);
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.order-form__side-btn--buy.active {
+    background-color: var(--color-success);
+    color: #0b0e11;
+}
+
+.order-form__side-btn--sell.active {
+    background-color: var(--color-danger);
+    color: #fff;
+}
+
+.order-form__type-tabs {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.order-form__type-tabs span {
+    padding-bottom: var(--spacing-sm);
+    cursor: pointer;
+}
+
+.order-form__type-tabs span.active {
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--color-accent);
+}
+
+.order-form__balance {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-sm);
+}
+
+.order-form__input-group {
+    position: relative;
+    margin-bottom: var(--spacing-sm);
+}
+
+.order-form__input-group .form-control {
+    padding-right: 60px;
+    font-family: var(--font-mono);
+}
+
+.order-form__input-suffix {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Слайдер процента от баланса (25% / 50% / 75% / 100%) */
+.percent-slider {
+    display: flex;
+    gap: 4px;
+    margin: var(--spacing-sm) 0 var(--spacing-md);
+}
+
+.percent-slider__step {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--bg-tertiary);
+    cursor: pointer;
+}
+
+.percent-slider__step.active {
+    background-color: var(--color-accent);
+}
+
+.order-form__submit-buy {
+    background-color: var(--color-success);
+    color: #0b0e11;
+}
+
+.order-form__submit-sell {
+    background-color: var(--color-danger);
+    color: #fff;
+}
+
+.order-form__summary {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.order-form__summary span:last-child {
+    color: var(--text-secondary);
+}
+
+/* ---------- Плечо для маржи/фьючерсов (margin.html / futures.html) ---------- */
+.leverage-control {
+    margin-bottom: var(--spacing-md);
+}
+
+.leverage-control__value {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.leverage-control__value strong {
+    color: var(--color-accent);
+}
+
+input[type="range"].leverage-slider {
+    width: 100%;
+    accent-color: var(--color-accent);
+}
+
+.leverage-presets {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+}
+
+.leverage-presets__btn {
+    flex: 1;
+    padding: 4px;
+    font-size: 0.7rem;
+    text-align: center;
+    background-color: var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-secondary);
+}
+
+.leverage-presets__btn.active {
+    background-color: var(--bg-hover);
+    color: var(--color-accent);
+}
+
+/* ==========================================================================
+   Список ордеров (orders.html / history.html / trades_history.html)
+   ========================================================================== */
+
+.orders-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.orders-filters {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.order-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.order-status--open { color: var(--color-info); }
+.order-status--filled { color: var(--color-success); }
+.order-status--cancelled { color: var(--text-muted); }
+.order-status--partial { color: var(--color-warning); }
+
+.order-side {
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.order-side--buy { color: var(--color-success); }
+.order-side--sell { color: var(--color-danger); }
+
+.order-cancel-btn {
+    color: var(--color-danger);
+    font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   Активные позиции (order_detail.html / futures.html)
+   ========================================================================== */
+
+.position-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--color-success);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.position-card--short {
+    border-left-color: var(--color-danger);
+}
+
+.position-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.position-card__pair {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.position-card__leverage {
+    font-size: 0.7rem;
+    padding: 1px 8px;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.position-card__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+    font-size: 0.8rem;
+}
+
+.position-card__pnl {
+    font-family: var(--font-mono);
+    font-weight: 700;
+}
+
+.position-card__pnl--positive { color: var(--color-success); }
+.position-card__pnl--negative { color: var(--color-danger); }
+
+.position-card__actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+/* ==========================================================================
+   Стоп-лосс / Тейк-профит (stop_loss.html / take_profit.html)
+   ========================================================================== */
+
+.sl-tp-panel {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+}
+
+.sl-tp-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sl-tp-row:last-child {
+    border-bottom: none;
+}
+
+.sl-tp-row__label {
+    width: 90px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.sl-tp-row__label--sl { color: var(--color-danger); }
+.sl-tp-row__label--tp { color: var(--color-success); }
+
+.sl-tp-trigger-price {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+.sl-tp-estimate {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ---------- Адаптив торгового интерфейса ---------- */
+@media (max-width: 1200px) {
+    .trading-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .trading-layout__chart,
+    .trading-layout__book,
+    .trading-layout__pairs,
+    .trading-layout__panel {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 576px) {
+    .position-card__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

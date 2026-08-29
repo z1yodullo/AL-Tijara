@@ -1,0 +1,303 @@
+/* ==========================================================================
+   responsive.css — АДАПТИВНОСТЬ
+   Общие точки перелома и мобильные переопределения для всего сайта.
+   Подключается ПОСЛЕДНИМ файлом, после всех остальных CSS,
+   чтобы правила имели приоритет на маленьких экранах.
+
+   Точки перелома:
+   1280px — large desktop / контейнер
+   992px  — tablet landscape
+   768px  — tablet portrait
+   576px  — mobile
+   380px  — small mobile
+   ========================================================================== */
+
+/* ==========================================================================
+   ≤ 1280px — сжимаем контейнер
+   ========================================================================== */
+@media (max-width: 1280px) {
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+}
+
+/* ==========================================================================
+   ≤ 992px — планшет (альбомная ориентация)
+   ========================================================================== */
+@media (max-width: 992px) {
+    :root {
+        --header-height: 56px;
+    }
+
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.3rem; }
+
+    /* Навигация переходит в компактный режим */
+    .navbar__menu {
+        display: none;
+    }
+
+    .navbar__burger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+    }
+
+    .navbar__burger svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* Мобильное выпадающее меню на всю ширину */
+    .navbar__menu.mobile-open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        background-color: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        padding: var(--spacing-md);
+        gap: var(--spacing-md);
+        z-index: 99;
+    }
+
+    /* Карточки статистики / рынка в две колонки */
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ==========================================================================
+   ≤ 768px — планшет (портретная ориентация)
+   ========================================================================== */
+@media (max-width: 768px) {
+    main {
+        padding: var(--spacing-md) 0;
+    }
+
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    h1 { font-size: 1.4rem; }
+
+    .card {
+        padding: var(--spacing-md);
+    }
+
+    /* Формы — поля друг под другом */
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    /* Таблицы со скроллом по горизонтали */
+    .table-wrapper {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        font-size: 0.8rem;
+    }
+
+    th, td {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        white-space: nowrap;
+    }
+
+    /* Модальные окна почти на весь экран */
+    .modal {
+        max-width: calc(100% - 32px);
+        padding: var(--spacing-md);
+    }
+
+    .toast {
+        left: var(--spacing-sm);
+        right: var(--spacing-sm);
+        bottom: var(--spacing-sm);
+    }
+
+    /* Графики ниже по высоте на планшетах */
+    .chart-panel__canvas {
+        height: 320px;
+    }
+
+    .spread-chart-panel__canvas {
+        height: 280px;
+    }
+}
+
+/* ==========================================================================
+   ≤ 576px — мобильный телефон
+   ========================================================================== */
+@media (max-width: 576px) {
+    :root {
+        --spacing-lg: 16px;
+        --spacing-xl: 24px;
+    }
+
+    body {
+        font-size: 0.9rem;
+    }
+
+    h1 { font-size: 1.25rem; }
+    h2 { font-size: 1.1rem; }
+    h3 { font-size: 1rem; }
+
+    .navbar {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .navbar__logo span {
+        display: none; /* оставляем только иконку логотипа */
+    }
+
+    /* Единая колонка почти везде */
+    .card-grid,
+    .footer__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    .btn--lg {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+
+    /* Кнопки действий на всю ширину внутри карточек */
+    .card .btn,
+    .position-card__actions .btn,
+    .order-form__submit-buy,
+    .order-form__submit-sell {
+        width: 100%;
+    }
+
+    /* Скрываем второстепенные колонки таблиц на мобильных */
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .chart-panel__toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .chart-intervals {
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .chart-panel__canvas {
+        height: 260px;
+        padding: var(--spacing-sm);
+    }
+
+    /* Стакан заказов и график друг под другом на телефоне */
+    .orderbook__columns,
+    .orderbook-row,
+    .trade-row {
+        font-size: 0.72rem;
+    }
+
+    /* Карточка арбитражной возможности — вертикально */
+    .opportunity-card {
+        grid-template-columns: 1fr;
+        text-align: left;
+    }
+
+    .opportunity-card__action {
+        justify-self: stretch;
+    }
+
+    .opportunity-card__action .btn {
+        width: 100%;
+    }
+
+    /* Виджеты дашборда в одну колонку (дублирует dashboard.css на всякий случай) */
+    .stats-grid,
+    .dashboard-grid,
+    .pnl-summary {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Позиции в одну колонку данных */
+    .position-card__grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* Auth-карточка занимает почти весь экран */
+    .auth-page {
+        padding: var(--spacing-md);
+        align-items: flex-start;
+        padding-top: var(--spacing-xl);
+    }
+}
+
+/* ==========================================================================
+   ≤ 380px — маленький мобильный экран
+   ========================================================================== */
+@media (max-width: 380px) {
+    .container {
+        padding: 0 var(--spacing-xs);
+    }
+
+    .stat-widget__value {
+        font-size: 1.3rem;
+    }
+
+    .pair-header__price {
+        font-size: 1.4rem;
+    }
+
+    .otp-inputs__cell {
+        width: 36px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+
+    .position-card__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   Ландшафтная ориентация на телефоне — уменьшаем вертикальные отступы
+   ========================================================================== */
+@media (max-height: 480px) and (orientation: landscape) {
+    .auth-page {
+        padding-top: var(--spacing-md);
+        padding-bottom: var(--spacing-md);
+    }
+
+    .chart-panel__canvas {
+        height: 200px;
+    }
+}
+
+/* ==========================================================================
+   Touch-устройства — увеличенные зоны нажатия, без hover-эффектов
+   ========================================================================== */
+@media (hover: none) {
+    .btn,
+    .navbar__link,
+    .market-tabs__item,
+    .scanner-filter-chip {
+        min-height: 40px;
+    }
+
+    .card:hover {
+        border-color: var(--border-color);
+    }
+}

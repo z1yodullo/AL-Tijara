@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Al-Tijara{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="{% url 'trading:dashboard' %}" class="navbar__logo">Al-Tijara</a>
+            <div class="navbar__menu">
+                {% if user.is_authenticated %}
+                <a href="{% url 'trading:dashboard' %}" class="navbar__link {% block nav_dashboard %}{% endblock %}">Главная</a>
+                <a href="{% url 'trading:trade' %}" class="navbar__link {% block nav_trade %}{% endblock %}">Торговый терминал</a>
+                <a href="{% url 'trading:trading' %}" class="navbar__link {% block nav_trading %}{% endblock %}">Торговля</a>
+                <a href="{% url 'trading:history' %}" class="navbar__link {% block nav_history %}{% endblock %}">История</a>
+                <a href="{% url 'analytics:indicators' %}" class="navbar__link {% block nav_indicators %}{% endblock %}">Индикаторы</a>
+                <div class="navbar__dropdown">
+                    <span class="navbar__link">Ещё</span>
+                    <div class="navbar__dropdown-menu">
+                        <a href="{% url 'analytics:alerts' %}" class="navbar__dropdown-item">Ценовые алерты</a>
+                        <a href="{% url 'analytics:watchlist' %}" class="navbar__dropdown-item">Избранное</a>
+                        <a href="{% url 'analytics:arbitrage' %}" class="navbar__dropdown-item">Арбитраж</a>
+                        <a href="{% url 'analytics:backtest' %}" class="navbar__dropdown-item">Бэктестинг</a>
+                        <a href="{% url 'analytics:leaderboard' %}" class="navbar__dropdown-item">Лидерборд</a>
+                        <a href="{% url 'analytics:pnl' %}" class="navbar__dropdown-item">P&L График</a>
+                        <a href="{% url 'analytics:export' %}" class="navbar__dropdown-item">Экспорт CSV</a>
+                    </div>
+                </div>
+                <div class="navbar__account-switcher">
+                    <div class="navbar__account-toggle">
+                        <button class="navbar__toggle-btn active" id="navToggleDemo" onclick="navSwitchAccount('demo')">ДЕМО</button>
+                        <button class="navbar__toggle-btn" id="navToggleReal" onclick="navSwitchAccount('real')">РЕАЛ</button>
+                    </div>
+                    <div class="navbar__account-balance">
+                        <span class="navbar__balance-amount" id="navBalanceDisplay">{{ user.demo_account.get_balance }}</span>
+                        <span class="navbar__balance-currency">USDT</span>
+                    </div>
+                </div>
+                <div class="navbar__dropdown">
+                    <a href="{% url 'users:profile' %}" class="navbar__link">{{ user.username }}</a>
+                    <div class="navbar__dropdown-menu">
+                        <a href="{% url 'users:profile' %}" class="navbar__dropdown-item">Профиль</a>
+                        <a href="{% url 'users:logout' %}" class="navbar__dropdown-item">Выйти</a>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'users:login' %}" class="navbar__link">Войти</a>
+                <a href="{% url 'users:register' %}" class="btn btn--primary btn--sm">Регистрация</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="toast" style="display:block; position:static; margin-bottom:16px; border-left-color: {% if message.tags == 'success' %}var(--color-success){% elif message.tags == 'error' %}var(--color-danger){% else %}var(--color-accent){% endif %};">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer__bottom">
+            &copy; 2026 Al-Tijara. Демо-платформа для торговли криптовалютой.
+        </div>
+    </footer>
+
+    {% if user.is_authenticated %}
+    <script>
+    (function() {
+        var currentMode = localStorage.getItem('accountMode') || 'demo';
+        var balanceEl = document.getElementById('navBalanceDisplay');
+        var demoBtn = document.getElementById('navToggleDemo');
+        var realBtn = document.getElementById('navToggleReal');
+
+        function applyMode(mode) {
+            currentMode = mode;
+            localStorage.setItem('accountMode', mode);
+            if (mode === 'demo') {
+                demoBtn.classList.add('active');
+                realBtn.classList.remove('active');
+            } else {
+                realBtn.classList.add('active');
+                demoBtn.classList.remove('active');
+            }
+            fetchBalance(mode);
+        }
+
+        function fetchBalance(mode) {
+            fetch('/api/trade/balance/?mode=' + mode)
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+                if (d.balance !== undefined && balanceEl) {
+                    balanceEl.textContent = d.balance;
+                }
+            })
+            .catch(function() {});
+        }
+
+        window.navSwitchAccount = function(mode) {
+            applyMode(mode);
+        };
+
+        applyMode(currentMode);
+    })();
+    </script>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

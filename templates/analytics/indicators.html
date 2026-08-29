@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Индикаторы - Al-Tijara{% endblock %}
+
+{% block content %}
+<div class="indicators">
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h2 class="card__title">Технические индикаторы - {{ symbol }}</h2>
+        </div>
+        <div class="card__body">
+            <form method="get" class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Пара</label>
+                    <input type="text" name="symbol" class="form-control" value="{{ symbol }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Таймфрейм</label>
+                    <select name="timeframe" class="form-control select-control">
+                        <option value="1h" {% if timeframe == '1h' %}selected{% endif %}>1 час</option>
+                        <option value="4h" {% if timeframe == '4h' %}selected{% endif %}>4 часа</option>
+                        <option value="1d" {% if timeframe == '1d' %}selected{% endif %}>1 день</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; align-items:flex-end;">
+                    <button type="submit" class="btn btn--primary">Загрузить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h3 class="card__title">Сигнал</h3>
+        </div>
+        <div class="card__body">
+            <p>
+                Направление:
+                <strong class="{% if signal.direction == 'buy' %}text-success{% elif signal.direction == 'sell' %}text-danger{% endif %}">
+                    {% if signal.direction == 'buy' %}ПОКУПКА{% elif signal.direction == 'sell' %}ПРОДАЖА{% else %}НЕЙТРАЛЬНО{% endif %}
+                </strong>
+                (Сила: {{ signal.strength }} | За покупку: {{ signal.buy_votes }} | За продажу: {{ signal.sell_votes }} | Нейтрально: {{ signal.neutral_votes }})
+            </p>
+            <p>Текущая цена: <strong class="font-mono">{{ current_price }}</strong></p>
+        </div>
+    </div>
+
+    <div class="card-grid mb-lg">
+        <div class="card">
+            <div class="card__header"><h4 class="card__title">RSI (14)</h4></div>
+            <div class="card__body">
+                {% with rsi=indicators.rsi %}
+                {% if rsi %}
+                {% with last_rsi=rsi|last %}
+                <p class="font-mono {% if last_rsi > 70 %}text-danger{% elif last_rsi < 30 %}text-success{% endif %}">{{ last_rsi|floatformat:1 }}</p>
+                <p class="text-secondary text-muted">{% if last_rsi > 70 %}Перекупленность{% elif last_rsi < 30 %}Перепроданность{% else %}Нейтральная зона{% endif %}</p>
+                {% endwith %}
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        <div class="card">
+            <div class="card__header"><h4 class="card__title">MACD</h4></div>
+            <div class="card__body">
+                {% with macd=indicators.macd %}
+                {% if macd.macd %}
+                <p class="font-mono">MACD: {{ macd.macd|last|floatformat:4 }}</p>
+                <p class="font-mono">Сигнал: {{ macd.signal|last|floatformat:4 }}</p>
+                <p class="font-mono {% if macd.histogram|last > 0 %}text-success{% else %}text-danger{% endif %}">
+                    Гистограмма: {{ macd.histogram|last|floatformat:4 }}
+                </p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        <div class="card">
+            <div class="card__header"><h4 class="card__title">Полюса Боллинджера</h4></div>
+            <div class="card__body">
+                {% with bb=indicators.bollinger %}
+                {% if bb.upper %}
+                <p class="font-mono text-danger">Верхняя: {{ bb.upper|last|floatformat:2 }}</p>
+                <p class="font-mono">Средняя: {{ bb.middle|last|floatformat:2 }}</p>
+                <p class="font-mono text-success">Нижняя: {{ bb.lower|last|floatformat:2 }}</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        <div class="card">
+            <div class="card__header"><h4 class="card__title">Стохастик</h4></div>
+            <div class="card__body">
+                {% with stoch=indicators.stochastic %}
+                {% if stoch.k %}
+                <p class="font-mono">%K: {{ stoch.k|last|floatformat:1 }}</p>
+                <p class="font-mono">%D: {{ stoch.d|last|floatformat:1 }}</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">График цены</h3>
+        </div>
+        <div class="card__body">
+            <canvas id="priceChart" height="300"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartData = {{ chart_data|safe }};
+    const ctx = document.getElementById('priceChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.timestamps,
+            datasets: [
+                {
+                    label: 'Цена',
+                    data: chartData.closes,
+                    borderColor: '#f0b90b',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.1,
+                },
+                {
+                    label: 'SMA 20',
+                    data: chartData.sma_20,
+                    borderColor: '#3375bb',
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    borderDash: [5, 5],
+                },
+                {
+                    label: 'Верхняя полоса',
+                    data: chartData.upper,
+                    borderColor: 'rgba(246, 70, 93, 0.5)',
+                    borderWidth: 1,
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Нижняя полоса',
+                    data: chartData.lower,
+                    borderColor: 'rgba(14, 203, 129, 0.5)',
+                    borderWidth: 1,
+                    pointRadius: 0,
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: '#848e9c' } } },
+            scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#848e9c', maxTicksLimit: 10 } },
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#848e9c' } }
+            }
+        }
+    });
+</script>
+{% endblock %}

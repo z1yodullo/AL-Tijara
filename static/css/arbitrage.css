@@ -1,0 +1,377 @@
+/* ==========================================================================
+   arbitrage.css — АРБИТРАЖ
+   Сканер возможностей, графики спредов, история сделок, настройки
+   Подключается на страницах templates/arbitrage/*
+   ========================================================================== */
+
+/* ---------- Заголовок раздела арбитража (index.html) ---------- */
+.arbitrage-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    background: linear-gradient(135deg, rgba(240, 185, 11, 0.10), rgba(51, 117, 187, 0.08));
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-lg);
+}
+
+.arbitrage-hero__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.arbitrage-hero__subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.arbitrage-stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.arbitrage-stat {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    text-align: center;
+}
+
+.arbitrage-stat__value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+}
+
+.arbitrage-stat__label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   Сканер арбитража (scanner.html)
+   ========================================================================== */
+
+.scanner-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.scanner-filters {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.scanner-filter-chip {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    border-radius: 999px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.scanner-filter-chip.active {
+    background-color: var(--color-accent);
+    color: #14171c;
+    border-color: var(--color-accent);
+    font-weight: 600;
+}
+
+.scanner-live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--color-success);
+}
+
+.scanner-live-indicator__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+    0% { box-shadow: 0 0 0 0 rgba(14, 203, 129, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(14, 203, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(14, 203, 129, 0); }
+}
+
+/* ---------- Карточка арбитражной возможности ---------- */
+.opportunity-card {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+    align-items: center;
+    gap: var(--spacing-md);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    transition: border-color var(--transition-fast);
+}
+
+.opportunity-card:hover {
+    border-color: var(--color-accent);
+}
+
+.opportunity-card__pair {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 700;
+}
+
+.opportunity-card__route {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.opportunity-card__route .exchange-badge {
+    padding: 2px 8px;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--bg-tertiary);
+    font-size: 0.7rem;
+}
+
+.opportunity-card__route .arrow {
+    color: var(--text-muted);
+}
+
+.opportunity-card__spread {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.opportunity-card__spread--high { color: var(--color-success); }
+.opportunity-card__spread--medium { color: var(--color-warning); }
+.opportunity-card__spread--low { color: var(--text-secondary); }
+
+.opportunity-card__profit-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.opportunity-card__action {
+    justify-self: end;
+}
+
+/* ==========================================================================
+   График спредов (chart.html)
+   ========================================================================== */
+
+.spread-chart-panel {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+}
+
+.spread-chart-panel__legend {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    font-size: 0.8rem;
+}
+
+.spread-chart-panel__legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.legend-dot--exchange-a { background-color: var(--color-accent); }
+.legend-dot--exchange-b { background-color: var(--color-info); }
+.legend-dot--spread { background-color: var(--color-success); }
+
+.spread-chart-panel__canvas {
+    width: 100%;
+    height: 360px;
+}
+
+.spread-threshold-line {
+    border-top: 1px dashed var(--color-warning);
+}
+
+/* ==========================================================================
+   История арбитражных сделок (history.html)
+   ========================================================================== */
+
+.arb-history-row .route-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+}
+
+.arb-history-row .profit-cell {
+    font-family: var(--font-mono);
+    font-weight: 700;
+}
+
+.arb-history-row .profit-cell--positive { color: var(--color-success); }
+.arb-history-row .profit-cell--negative { color: var(--color-danger); }
+
+/* ==========================================================================
+   Настройки арбитража (settings.html)
+   ========================================================================== */
+
+.arb-settings-section {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.arb-settings-section__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.arb-settings-section__desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.arb-settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.arb-settings-row:last-child {
+    border-bottom: none;
+}
+
+.arb-settings-row__label {
+    font-size: 0.875rem;
+}
+
+.arb-settings-row__hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* Переключатель (toggle switch) для включения бирж/уведомлений */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch__slider {
+    position: absolute;
+    inset: 0;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.switch__slider::before {
+    content: '';
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    top: 3px;
+    background-color: var(--text-secondary);
+    border-radius: 50%;
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.switch input:checked + .switch__slider {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.switch input:checked + .switch__slider::before {
+    transform: translateX(18px);
+    background-color: #14171c;
+}
+
+.exchange-toggle-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.exchange-toggle-list__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm);
+    background-color: var(--bg-tertiary);
+    border-radius: var(--border-radius-md);
+}
+
+/* ---------- Адаптив ---------- */
+@media (max-width: 992px) {
+    .arbitrage-stat-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .opportunity-card {
+        grid-template-columns: 1fr 1fr;
+        row-gap: var(--spacing-sm);
+    }
+
+    .opportunity-card__action {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+    }
+
+    .opportunity-card__action .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .arbitrage-stat-strip {
+        grid-template-columns: 1fr;
+    }
+}

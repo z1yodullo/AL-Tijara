@@ -1,0 +1,268 @@
+/* ==========================================================================
+   auth.css — СТРАНИЦЫ ВХОДА / РЕГИСТРАЦИИ
+   Центрирование, карточка авторизации, соц. кнопки, 2FA
+   Подключается ПОСЛЕ style.css на login.html / register.html
+   ========================================================================== */
+
+.auth-page {
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl) var(--spacing-md);
+    background:
+        radial-gradient(circle at 20% 20%, rgba(240, 185, 11, 0.06), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(51, 117, 187, 0.06), transparent 40%),
+        var(--bg-primary);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-xl);
+}
+
+.auth-card__logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.auth-card__logo img,
+.auth-card__logo svg {
+    height: 36px;
+}
+
+.auth-card__title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+}
+
+.auth-card__subtitle {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* ---------- Форма ---------- */
+.auth-form .form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.auth-form__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.8rem;
+}
+
+.auth-form__forgot {
+    color: var(--color-accent);
+}
+
+.auth-form__submit {
+    margin-bottom: var(--spacing-md);
+}
+
+/* ---------- Индикатор надёжности пароля ---------- */
+.password-strength {
+    display: flex;
+    gap: 4px;
+    margin-top: var(--spacing-xs);
+}
+
+.password-strength__bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--border-color);
+    transition: background-color var(--transition-fast);
+}
+
+.password-strength__bar--weak { background-color: var(--color-danger); }
+.password-strength__bar--medium { background-color: var(--color-warning); }
+.password-strength__bar--strong { background-color: var(--color-success); }
+
+.password-strength__label {
+    margin-top: 4px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* ---------- Разделитель "или" ---------- */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+/* ---------- Соц. кнопки входа ---------- */
+.auth-social {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.auth-social__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: 10px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color var(--transition-fast);
+}
+
+.auth-social__btn:hover {
+    background-color: var(--bg-hover);
+}
+
+.auth-social__btn img,
+.auth-social__btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ---------- Футер карточки (ссылка на регистрацию/вход) ---------- */
+.auth-card__footer {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.auth-card__footer a {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* ---------- Согласие с условиями ---------- */
+.auth-terms {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.auth-terms a {
+    color: var(--text-secondary);
+    text-decoration: underline;
+}
+
+/* ---------- 2FA / Верификация кода ---------- */
+.otp-inputs {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-lg) 0;
+}
+
+.otp-inputs__cell {
+    width: 48px;
+    height: 56px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-family: var(--font-mono);
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+}
+
+.otp-inputs__cell:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.auth-resend {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.auth-resend__link {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* ---------- Индикатор шагов (регистрация в несколько шагов) ---------- */
+.auth-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.auth-steps__step {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.auth-steps__step.active {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #14171c;
+    font-weight: 700;
+}
+
+.auth-steps__step.done {
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+    color: #0b0e11;
+}
+
+.auth-steps__line {
+    width: 32px;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+/* ---------- Мобильная адаптация карточки ---------- */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius-md);
+    }
+
+    .otp-inputs__cell {
+        width: 40px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+}

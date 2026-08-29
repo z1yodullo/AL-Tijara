@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Торговля {{ symbol }} - Al-Tijara{% endblock %}
+{% block nav_trading %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/trading.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="trading">
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h2 class="card__title">{{ symbol }}</h2>
+            <span class="font-mono {% if change_24h > 0 %}text-success{% elif change_24h < 0 %}text-danger{% endif %}">
+                {{ change_24h }}%
+            </span>
+        </div>
+        <div class="card__body">
+            <p>Текущая цена: <strong class="font-mono">{{ current_price }} USDT</strong></p>
+        </div>
+    </div>
+
+    <div class="card-grid mb-lg">
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">Создать ордер</h3>
+            </div>
+            <div class="card__body">
+                <form method="post" action="{% url 'trading:create_order' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="symbol" value="{{ symbol }}">
+
+                    <div class="form-group">
+                        <label class="form-label">Сторона</label>
+                        <select name="side" class="form-control select-control">
+                            <option value="BUY">Покупка</option>
+                            <option value="SELL">Продажа</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Тип ордера</label>
+                        <select name="order_type" class="form-control select-control" id="orderType">
+                            <option value="MARKET">Рыночный</option>
+                            <option value="LIMIT">Лимитный</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="priceGroup" style="display:none;">
+                        <label class="form-label">Цена (USDT)</label>
+                        <input type="number" name="price" step="0.01" class="form-control" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Количество</label>
+                        <input type="number" name="quantity" step="0.000001" class="form-control" placeholder="0.00" required>
+                    </div>
+
+                    <div class="form-group" id="stopLossGroup" style="display:none;">
+                        <label class="form-label">Стоп-лосс (USDT)</label>
+                        <input type="number" name="stop_loss" step="0.01" class="form-control" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group" id="takeProfitGroup" style="display:none;">
+                        <label class="form-label">Тейк-профит (USDT)</label>
+                        <input type="number" name="take_profit" step="0.01" class="form-control" placeholder="0.00">
+                    </div>
+
+                    <button type="submit" class="btn btn--primary btn--full">Разместить ордер</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">Стакан заявок</h3>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Цена</th>
+                            <th>Количество</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ask in order_book.asks|slice:":5" %}
+                        <tr>
+                            <td class="font-mono text-danger">{{ ask.0 }}</td>
+                            <td class="font-mono">{{ ask.1 }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr><td colspan="2" class="text-center font-mono" style="color:var(--color-accent);">{{ current_price }}</td></tr>
+                        {% for bid in order_book.bids|slice:":5" %}
+                        <tr>
+                            <td class="font-mono text-success">{{ bid.0 }}</td>
+                            <td class="font-mono">{{ bid.1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h3 class="card__title">Открытые ордера</h3>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Сторона</th>
+                        <th>Тип</th>
+                        <th>Цена</th>
+                        <th>Кол-во</th>
+                        <th>СЛ</th>
+                        <th>ТП</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in open_orders %}
+                    <tr>
+                        <td class="font-mono">{{ o.id }}</td>
+                        <td><span class="badge badge--{% if o.side == 'BUY' %}success{% else %}danger{% endif %}">{% if o.side == 'BUY' %}Покупка{% else %}Продажа{% endif %}</span></td>
+                        <td>{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
+                        <td class="font-mono">{{ o.price|default:"-" }}</td>
+                        <td class="font-mono">{{ o.quantity }}</td>
+                        <td class="font-mono text-danger">{{ o.stop_loss|default:"-" }}</td>
+                        <td class="font-mono text-success">{{ o.take_profit|default:"-" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'trading:cancel_order' o.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn--danger btn--sm">Отменить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="text-muted">Нет открытых ордеров</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('orderType').addEventListener('change', function() {
+    const isLimit = this.value === 'LIMIT';
+    document.getElementById('priceGroup').style.display = isLimit ? 'block' : 'none';
+    document.getElementById('stopLossGroup').style.display = 'block';
+    document.getElementById('takeProfitGroup').style.display = 'block';
+});
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Профиль - Al-Tijara{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile">
+    <div class="card" style="max-width:600px; margin:0 auto;">
+        <div class="card__header">
+            <h2 class="card__title">{{ user.username }}</h2>
+        </div>
+        <div class="card__body">
+            <p>Email: {{ user.email }}</p>
+            <p>Баланс: <strong class="font-mono">{{ demo_balance }}</strong></p>
+            <p>Общая стоимость: <strong class="font-mono">{{ total_value }} USDT</strong></p>
+            <p>Дата регистрации: {{ user.date_joined|date:"d.m.Y" }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

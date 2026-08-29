@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}История сделок - Al-Tijara{% endblock %}
+{% block nav_history %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/trading.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="history">
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h2 class="card__title">История сделок</h2>
+        </div>
+        <div class="card__body">
+            <p>Всего сделок: <strong>{{ total_trades }}</strong> |
+               Покупки: <strong class="text-success">{{ buy_count }}</strong> |
+               Продажи: <strong class="text-danger">{{ sell_count }}</strong> |
+               Объём: <strong class="font-mono">{{ total_volume }}</strong></p>
+        </div>
+    </div>
+
+    <div class="card mb-lg">
+        <div class="card__body">
+            <form method="get" class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Пара</label>
+                    <input type="text" name="symbol" class="form-control" value="{{ symbol_filter }}" placeholder="BTC/USDT">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Сторона</label>
+                    <select name="side" class="form-control select-control">
+                        <option value="">Все</option>
+                        <option value="BUY" {% if side_filter == 'BUY' %}selected{% endif %}>Покупка</option>
+                        <option value="SELL" {% if side_filter == 'SELL' %}selected{% endif %}>Продажа</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Статус</label>
+                    <select name="status" class="form-control select-control">
+                        <option value="">Все</option>
+                        <option value="FILLED" {% if status_filter == 'FILLED' %}selected{% endif %}>Исполнен</option>
+                        <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>Отменён</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; align-items:flex-end;">
+                    <button type="submit" class="btn btn--primary">Фильтр</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Дата</th>
+                        <th>Пара</th>
+                        <th>Сторона</th>
+                        <th>Тип</th>
+                        <th>Цена</th>
+                        <th>Кол-во</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in orders %}
+                    <tr>
+                        <td class="font-mono">{{ o.id }}</td>
+                        <td>{{ o.created_at|date:"d.m.Y H:i" }}</td>
+                        <td class="font-mono">{{ o.symbol }}</td>
+                        <td><span class="badge badge--{% if o.side == 'BUY' %}success{% else %}danger{% endif %}">{% if o.side == 'BUY' %}Покупка{% else %}Продажа{% endif %}</span></td>
+                        <td>{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
+                        <td class="font-mono">{{ o.price|default:"-" }}</td>
+                        <td class="font-mono">{{ o.quantity }}</td>
+                        <td><span class="badge badge--{% if o.status == 'FILLED' %}success{% elif o.status == 'OPEN' %}info{% else %}warning{% endif %}">{% if o.status == 'FILLED' %}Исполнен{% elif o.status == 'OPEN' %}Открыт{% elif o.status == 'CANCELLED' %}Отменён{% else %}{{ o.status }}{% endif %}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="text-muted">Ордеров не найдено</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

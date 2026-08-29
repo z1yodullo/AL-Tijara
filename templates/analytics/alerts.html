@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ценовые алерты - Al-Tijara{% endblock %}
+
+{% block content %}
+<div class="alerts">
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h2 class="card__title">Ценовые алерты</h2>
+        </div>
+        <div class="card__body">
+            <form method="post" action="{% url 'analytics:create_alert' %}" class="form-row">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Пара</label>
+                    <input type="text" name="symbol" class="form-control" placeholder="BTC/USDT" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Целевая цена</label>
+                    <input type="number" name="target_price" step="0.01" class="form-control" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Направление</label>
+                    <select name="direction" class="form-control select-control">
+                        <option value="ABOVE">Выше (повышение)</option>
+                        <option value="BELOW">Ниже (снижение)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; align-items:flex-end;">
+                    <button type="submit" class="btn btn--primary">Создать алерт</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-lg">
+        <div class="card__header">
+            <h3 class="card__title">Активные алерты</h3>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Пара</th>
+                        <th>Направление</th>
+                        <th>Целевая цена</th>
+                        <th>Создан</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in active_alerts %}
+                    <tr>
+                        <td class="font-mono">{{ alert.symbol }}</td>
+                        <td>
+                            <span class="badge badge--{% if alert.direction == 'ABOVE' %}success{% else %}danger{% endif %}">
+                                {% if alert.direction == 'ABOVE' %}↑ Выше{% else %}↓ Ниже{% endif %}
+                            </span>
+                        </td>
+                        <td class="font-mono">{{ alert.target_price }}</td>
+                        <td>{{ alert.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'analytics:delete_alert' alert.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn--danger btn--sm">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-muted">Нет активных алертов</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if triggered_alerts %}
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">Сработавшие алерты</h3>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Пара</th>
+                        <th>Направление</th>
+                        <th>Целевая цена</th>
+                        <th>Время срабатывания</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in triggered_alerts %}
+                    <tr>
+                        <td class="font-mono">{{ alert.symbol }}</td>
+                        <td>
+                            <span class="badge badge--{% if alert.direction == 'ABOVE' %}success{% else %}danger{% endif %}">
+                                {% if alert.direction == 'ABOVE' %}↑ Выше{% else %}↓ Ниже{% endif %}
+                            </span>
+                        </td>
+                        <td class="font-mono">{{ alert.target_price }}</td>
+                        <td>{{ alert.triggered_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
