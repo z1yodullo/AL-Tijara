@@ -5,93 +5,14 @@
 
 {% block extra_css %}
 <style>
-header, footer { display: none !important; }
 body { background: #0b0e11; overflow: hidden; margin: 0; }
 main { padding: 0; }
-
-.trade-navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #14171c;
-    border-bottom: 1px solid #2b3139;
-    padding: 0 12px;
-    height: 36px;
-    flex-shrink: 0;
-    z-index: 100;
-}
-
-.trade-navbar-logo {
-    color: #f0b90b;
-    font-weight: 800;
-    font-size: 14px;
-    text-decoration: none;
-    letter-spacing: -0.02em;
-}
-
-.trade-navbar-links {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
-
-.trade-navbar-link {
-    color: #848e9c;
-    font-size: 11px;
-    font-weight: 600;
-    text-decoration: none;
-    padding: 4px 10px;
-    border-radius: 4px;
-    transition: all 0.15s;
-}
-
-.trade-navbar-link:hover {
-    color: #eaecef;
-    background: #1c2128;
-}
-
-.trade-navbar-link.active {
-    color: #f0b90b;
-    background: rgba(240, 185, 11, 0.1);
-}
-
-.trade-navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.trade-navbar-balance {
-    font-size: 11px;
-    color: #eaecef;
-    font-family: 'Roboto Mono', monospace;
-    font-weight: 600;
-}
-
-.trade-navbar-balance span {
-    color: #848e9c;
-    font-size: 10px;
-    margin-left: 2px;
-}
-
-.trade-navbar-user {
-    color: #848e9c;
-    font-size: 11px;
-    text-decoration: none;
-    padding: 3px 8px;
-    border-radius: 4px;
-    transition: all 0.15s;
-}
-
-.trade-navbar-user:hover {
-    color: #eaecef;
-    background: #1c2128;
-}
+main .container { max-width: none; padding: 0; }
 
 .trade-layout {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: calc(100vh - var(--header-height));
     width: 100%;
 }
 
@@ -246,35 +167,7 @@ main { padding: 0; }
     font-weight: 600;
 }
 
-.account-toggle {
-    display: flex;
-    background: #0b0e11;
-    border-radius: 6px;
-    padding: 3px;
-    margin-bottom: 6px;
-}
-
-.toggle-btn {
-    flex: 1;
-    padding: 5px;
-    border: none;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    background: transparent;
-    color: #848e9c;
-    transition: all 0.2s;
-}
-.toggle-btn.active { background: #f0b90b; color: #0b0e11; }
-
-.balance-display {
-    font-size: 20px;
-    font-weight: 700;
-    color: #eaecef;
-    font-family: 'Roboto Mono', monospace;
-}
-.balance-usdt { font-size: 11px; color: #848e9c; }
+.panel-section { position: relative; }
 
 .amount-input-group {
     display: flex;
@@ -343,6 +236,52 @@ main { padding: 0; }
     font-family: 'Roboto Mono', monospace;
 }
 .duration-input:focus { outline: none; border-color: #f0b90b; }
+
+.time-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #0b0e11;
+    border: 1px solid #2b3139;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+}
+
+.time-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #2b3139;
+    background: #1c2128;
+    color: #eaecef;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.time-btn:hover { border-color: #f0b90b; background: #262b33; }
+.time-btn:active { transform: scale(0.92); }
+
+.time-display {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'Roboto Mono', monospace;
+    color: #eaecef;
+    letter-spacing: 2px;
+    min-width: 140px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    outline: none;
+    caret-color: #f0b90b;
+}
+.time-display:focus {
+    color: #f0b90b;
+}
 
 .quick-durations {
     display: grid;
@@ -1016,22 +955,6 @@ main { padding: 0; }
 {% block content %}
 {% csrf_token %}
 <div class="trade-layout">
-    <div class="trade-navbar">
-        <a href="{% url 'trading:dashboard' %}" class="trade-navbar-logo">Al-Tijara</a>
-        <div class="trade-navbar-links">
-            <a href="{% url 'trading:dashboard' %}" class="trade-navbar-link">Главная</a>
-            <a href="{% url 'trading:trade' %}" class="trade-navbar-link active">Терминал</a>
-            <a href="{% url 'trading:trading' %}" class="trade-navbar-link">Торговля</a>
-            <a href="{% url 'trading:history' %}" class="trade-navbar-link">История</a>
-            <a href="{% url 'analytics:indicators' %}" class="trade-navbar-link">Индикаторы</a>
-            <a href="{% url 'analytics:watchlist' %}" class="trade-navbar-link">Избранное</a>
-            <a href="{% url 'analytics:arbitrage' %}" class="trade-navbar-link">Арбитраж</a>
-        </div>
-        <div class="trade-navbar-right">
-            <span class="trade-navbar-balance" id="navBarBalance">{{ balance }}<span>USDT</span></span>
-            <a href="{% url 'users:profile' %}" class="trade-navbar-user">{{ user.username }}</a>
-        </div>
-    </div>
     <div class="trade-content">
     <div class="chart-area">
         <div class="chart-toolbar">
@@ -1131,20 +1054,6 @@ main { padding: 0; }
     </div>
 
     <div class="trade-panel">
-        <div class="panel-section" style="padding:8px;">
-            <div class="account-toggle">
-                <button class="toggle-btn active" id="toggleDemo" onclick="switchAccount('demo')">ДЕМО</button>
-                <button class="toggle-btn" id="toggleReal" onclick="switchAccount('real')">РЕАЛ</button>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                <div>
-                    <div class="balance-display" id="balanceDisplay">{{ balance }}</div>
-                    <div class="balance-usdt">USDT</div>
-                </div>
-                <div id="accountBadge" style="font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(240,185,11,0.15);color:#f0b90b;font-weight:700;">ДЕМО</div>
-            </div>
-        </div>
-
         <div class="panel-section">
             <div class="panel-label">Сумма ставки</div>
             <div class="amount-input-group">
@@ -1165,13 +1074,17 @@ main { padding: 0; }
         </div>
 
         <div class="panel-section">
-            <div class="panel-label">Экспирация</div>
-            <div class="amount-input-group">
-                <button class="amount-btn" onclick="changeDuration(-5)">-</button>
-                <input type="number" class="duration-input" id="durationInput" value="60" min="5" step="5">
-                <span style="font-size:11px;color:#848e9c;">сек</span>
-                <button class="amount-btn" onclick="changeDuration(5)">+</button>
+            <div class="panel-label">Время</div>
+            <div class="time-picker">
+                <button class="time-btn" onclick="changeDuration(-5)">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8" stroke="#848e9c" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <input type="text" class="time-display" id="timeDisplay" value="00:01:00" inputmode="numeric" maxlength="8">
+                <button class="time-btn" onclick="changeDuration(5)">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3v8" stroke="#848e9c" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
             </div>
+            <input type="hidden" id="durationInput" value="60">
             <div class="quick-durations">
                 <button class="quick-dur-btn" onclick="setDuration(5)">5с</button>
                 <button class="quick-dur-btn" onclick="setDuration(15)">15с</button>
@@ -1763,8 +1676,47 @@ function setAmount(v) { document.getElementById('amountInput').value = v; update
 function changeDuration(d) {
     var i = document.getElementById('durationInput');
     i.value = Math.max(5, parseInt(i.value || 0) + d);
+    updateTimeDisplay();
 }
-function setDuration(v) { document.getElementById('durationInput').value = v; }
+function setDuration(v) { document.getElementById('durationInput').value = v; updateTimeDisplay(); }
+
+function secToTimeStr(sec) {
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function timeStrToSec(str) {
+    var parts = str.split(':');
+    if (parts.length === 3) return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+    if (parts.length === 2) return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    return parseInt(str) || 0;
+}
+
+function updateTimeDisplay() {
+    var sec = parseInt(document.getElementById('durationInput').value) || 0;
+    document.getElementById('timeDisplay').value = secToTimeStr(sec);
+}
+
+document.getElementById('timeDisplay').addEventListener('input', function(e) {
+    var val = this.value.replace(/[^0-9:]/g, '');
+    this.value = val;
+});
+
+document.getElementById('timeDisplay').addEventListener('blur', function() {
+    var sec = timeStrToSec(this.value);
+    if (sec < 5) sec = 5;
+    document.getElementById('durationInput').value = sec;
+    this.value = secToTimeStr(sec);
+});
+
+document.getElementById('timeDisplay').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        this.blur();
+    }
+});
 
 function updateProfit() {
     var amount = parseFloat(document.getElementById('amountInput').value) || 0;
@@ -1778,32 +1730,27 @@ document.getElementById('amountInput').addEventListener('input', updateProfit);
 function switchAccount(mode) {
     accountMode = mode;
     localStorage.setItem('accountMode', mode);
-    document.getElementById('toggleDemo').classList.toggle('active', mode === 'demo');
-    document.getElementById('toggleReal').classList.toggle('active', mode === 'real');
-    var badge = document.getElementById('accountBadge');
-    if (mode === 'demo') {
-        badge.textContent = 'ДЕМО';
-        badge.style.background = 'rgba(240,185,11,0.15)';
-        badge.style.color = '#f0b90b';
-    } else {
-        badge.textContent = 'РЕАЛ';
-        badge.style.background = 'rgba(246,70,93,0.15)';
-        badge.style.color = '#f6465d';
-    }
     fetch('/api/trade/balance/?mode=' + mode)
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.balance !== undefined) {
-            document.getElementById('balanceDisplay').textContent = d.balance;
-            var navBalance = document.getElementById('navBalanceDisplay');
-            if (navBalance) navBalance.textContent = d.balance;
+            updateBalanceDisplay(d.balance);
         }
     })
     .catch(function() {});
 }
 
-document.getElementById('toggleDemo').classList.toggle('active', accountMode === 'demo');
-document.getElementById('toggleReal').classList.toggle('active', accountMode === 'real');
+function updateBalanceDisplay(balance) {
+    var navBalance = document.getElementById('navBalanceDisplay');
+    if (navBalance) navBalance.textContent = balance;
+    if (accountMode === 'demo') {
+        var el = document.getElementById('navDemoBal');
+        if (el) el.textContent = '$' + parseFloat(balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } else {
+        var el = document.getElementById('navLiveBal');
+        if (el) el.textContent = '$' + parseFloat(balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+}
 
 /* ===== PLACE TRADE ===== */
 function placeTrade(direction) {
@@ -1823,9 +1770,7 @@ function placeTrade(direction) {
     .then(function(data) {
         btn.disabled = false;
         if (data.success) {
-            document.getElementById('balanceDisplay').textContent = data.balance;
-            var navBalance = document.getElementById('navBalanceDisplay');
-            if (navBalance) navBalance.textContent = data.balance;
+            updateBalanceDisplay(data.balance);
             data.direction = direction;
             addActiveTrade(data);
             addTradeLine(data);
@@ -1972,15 +1917,37 @@ document.querySelectorAll('.indicator-card').forEach(function(card) {
 /* ===== INIT ===== */
 initChart();
 updateProfit();
+updateTimeDisplay();
 
 fetch('/api/trade/balance/?mode=' + accountMode)
 .then(function(r) { return r.json(); })
 .then(function(d) {
     if (d.balance !== undefined) {
-        document.getElementById('balanceDisplay').textContent = d.balance;
+        updateBalanceDisplay(d.balance);
+        if (accountMode === 'demo') {
+            document.getElementById('demoBalDisplay').textContent = '$' + parseFloat(d.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        } else {
+            document.getElementById('liveBalDisplay').textContent = '$' + parseFloat(d.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
     }
 })
 .catch(function() {});
+
+fetch('/api/trade/balance/?mode=demo')
+.then(function(r) { return r.json(); })
+.then(function(d) {
+    if (d.balance !== undefined) {
+        document.getElementById('demoBalDisplay').textContent = '$' + parseFloat(d.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+}).catch(function() {});
+
+fetch('/api/trade/balance/?mode=real')
+.then(function(r) { return r.json(); })
+.then(function(d) {
+    if (d.balance !== undefined) {
+        document.getElementById('liveBalDisplay').textContent = '$' + parseFloat(d.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+}).catch(function() {});
 
 /* ===== AI SIGNAL PANEL ===== */
 var aiScanTimer = null;

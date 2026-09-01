@@ -4,8 +4,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Count, Q
 from .forms import UserRegistrationForm, UserLoginForm
-from .models import DemoAccount
+from .models import DemoAccount, DemoOrder, RealAccount
 
 
 def register_view(request):
@@ -67,9 +68,31 @@ def profile_view(request):
     """
     Профиль пользователя
     """
-    demo_account = request.user.demo_account
-    
+    user = request.user
+    demo_account = user.demo_account
+
+    demo_balance = demo_account.get_balance('USDT')
+    total_value = demo_account.total_value_usdt or demo_balance
+
+    real_balance = 0
+    if hasattr(user, 'real_account'):
+        real_balance = user.real_account.get_balance('USDT')
+
+    orders = DemoOrder.objects.filter(account=demo_account, status='FILLED')
+    total_trades = orders.count()
+    win_trades = orders.filter(error_message__icontains='WIN').count()
+    lose_trades = total_trades - win_trades
+    win_rate = round(win_trades / total_trades * 100, 1) if total_trades > 0 else 0
+
+    watchlist_count = user.watchlist.count()
+
     return render(request, 'users/profile.html', {
-        'demo_balance': demo_account.balance,
-        'total_value': demo_account.total_value_usdt,
+        'demo_balance': demo_balance,
+        'total_value': total_value,
+        'real_balance': real_balance,
+        'total_trades': total_trades,
+        'win_trades': win_trades,
+        'lose_trades': lose_trades,
+        'win_rate': win_rate,
+        'watchlist_count': watchlist_count,
     })

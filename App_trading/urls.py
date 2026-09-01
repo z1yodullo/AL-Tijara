@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/order/create/', views.create_order_view, name='create_order'),
     path('api/order/<int:order_id>/cancel/', views.cancel_order_view, name='cancel_order'),
     path('api/demo/reset/', views.reset_demo_account_view, name='reset_demo'),
+    path('api/demo/set-balance/', views.set_demo_balance_api, name='set_demo_balance'),
     path('api/trade/klines/', views.trade_klines_api, name='trade_klines'),
     path('api/trade/place/', views.place_binary_trade, name='place_trade'),
     path('api/trade/balance/', views.account_balance_api, name='account_balance'),

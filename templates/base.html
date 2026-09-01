@@ -6,9 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Al-Tijara{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+    .nav-account-option:hover { background: var(--bg-hover); }
+    .nav-account-radio::after { content: ''; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--bg-primary); display: none; }
+    .nav-account-option.active .nav-account-radio::after { display: block; }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    {% csrf_token %}
     <header>
         <nav class="navbar">
             <a href="{% url 'trading:dashboard' %}" class="navbar__logo">Al-Tijara</a>
@@ -31,14 +37,50 @@
                         <a href="{% url 'analytics:export' %}" class="navbar__dropdown-item">Экспорт CSV</a>
                     </div>
                 </div>
-                <div class="navbar__account-switcher">
-                    <div class="navbar__account-toggle">
-                        <button class="navbar__toggle-btn active" id="navToggleDemo" onclick="navSwitchAccount('demo')">ДЕМО</button>
-                        <button class="navbar__toggle-btn" id="navToggleReal" onclick="navSwitchAccount('real')">РЕАЛ</button>
+                <div class="navbar__account-switcher" style="position:relative;">
+                    <div class="navbar-account-card" id="navAccountCard" onclick="toggleNavAccountMenu(event)" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:var(--border-radius-md);">
+                        <div style="width:28px;height:28px;border-radius:50%;background:rgba(14,203,129,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="#0ecb81" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#0ecb81" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div id="navAccountLabel" style="font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">ДЕМО АККАУНТ</div>
+                            <div style="display:flex;align-items:baseline;gap:4px;">
+                                <span class="navbar__balance-amount" id="navBalanceDisplay" style="font-family:var(--font-mono);font-size:0.8rem;font-weight:700;color:var(--text-primary);">{{ user.demo_account.get_balance }}</span>
+                                <span class="navbar__balance-currency" style="font-size:0.65rem;color:var(--text-muted);font-weight:600;">USDT</span>
+                            </div>
+                        </div>
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" id="navChevron" style="flex-shrink:0;transition:transform 0.2s;"><path d="M3 4.5L6 7.5L9 4.5" stroke="#848e9c" stroke-width="1.5" stroke-linecap="round"/></svg>
                     </div>
-                    <div class="navbar__account-balance">
-                        <span class="navbar__balance-amount" id="navBalanceDisplay">{{ user.demo_account.get_balance }}</span>
-                        <span class="navbar__balance-currency">USDT</span>
+                    <div class="navbar-account-menu" id="navAccountMenu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:var(--border-radius-md);box-shadow:var(--shadow-lg);min-width:240px;z-index:200;overflow:hidden;">
+                        <div style="padding:12px 14px;border-bottom:1px solid var(--border-color);">
+                            <div style="font-size:13px;font-weight:700;color:var(--text-primary);">{{ user.email }}</div>
+                            <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">ID: {{ user.id }}</div>
+                            <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">Currency: <span style="background:var(--color-info);color:#fff;font-size:10px;font-weight:700;padding:1px 8px;border-radius:3px;margin-left:4px;">USD</span></div>
+                        </div>
+                        <div class="nav-account-option" id="navOptLive" onclick="navSwitchAccount('real')" style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;cursor:pointer;transition:background 0.15s;">
+                            <div class="nav-account-radio" id="navRadioLive" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--text-muted);margin-top:2px;flex-shrink:0;transition:all 0.15s;position:relative;"></div>
+                            <div style="flex:1;">
+                                <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Live Account</div>
+                                <div id="navLiveBal" style="font-size:15px;font-weight:700;color:var(--text-primary);font-family:var(--font-mono);margin-top:2px;">$0.00</div>
+                                <div style="font-size:10px;color:var(--text-secondary);margin-top:2px;">The daily limit is not set</div>
+                                <div style="font-size:10px;font-weight:700;color:var(--color-info);cursor:pointer;margin-top:4px;">SET LIMIT</div>
+                            </div>
+                        </div>
+                        <div class="nav-account-option" id="navOptDemo" onclick="navSwitchAccount('demo')" style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;cursor:pointer;transition:background 0.15s;">
+                            <div class="nav-account-radio" id="navRadioDemo" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--text-muted);margin-top:2px;flex-shrink:0;transition:all 0.15s;position:relative;"></div>
+                            <div style="flex:1;">
+                                <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Demo Account</div>
+                                <div id="navDemoBal" style="font-size:15px;font-weight:700;color:var(--text-primary);font-family:var(--font-mono);margin-top:2px;">$0.00</div>
+                                <div id="navDemoEditWrap" style="display:none;margin-top:6px;">
+                                    <div style="display:flex;gap:6px;align-items:center;">
+                                        <input type="number" id="navDemoEditInput" min="0" step="100" style="flex:1;background:var(--bg-primary);border:1px solid var(--color-accent);border-radius:4px;color:var(--color-accent);font-family:var(--font-mono);font-size:14px;font-weight:700;padding:5px 8px;outline:none;" placeholder="Сумма">
+                                        <button onclick="event.stopPropagation();saveDemoBalance()" style="background:var(--color-accent);color:var(--bg-primary);border:none;border-radius:4px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;">OK</button>
+                                        <button onclick="event.stopPropagation();closeDemoEdit()" style="background:transparent;color:var(--text-secondary);border:1px solid var(--border-color);border-radius:4px;padding:5px 8px;font-size:11px;font-weight:600;cursor:pointer;">✕</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <svg onclick="event.stopPropagation();openDemoEdit()" width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin-top:2px;flex-shrink:0;cursor:pointer;" onmouseover="this.querySelector('path').setAttribute('stroke','#f0b90b')" onmouseout="this.querySelector('path').setAttribute('stroke','#848e9c')"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" stroke="#848e9c" stroke-width="2" stroke-linecap="round"/></svg>
+                        </div>
                     </div>
                 </div>
                 <div class="navbar__dropdown">
@@ -81,20 +123,31 @@
     (function() {
         var currentMode = localStorage.getItem('accountMode') || 'demo';
         var balanceEl = document.getElementById('navBalanceDisplay');
-        var demoBtn = document.getElementById('navToggleDemo');
-        var realBtn = document.getElementById('navToggleReal');
+        var demoBalEl = document.getElementById('navDemoBal');
+        var liveBalEl = document.getElementById('navLiveBal');
+        var labelEl = document.getElementById('navAccountLabel');
+        var chevron = document.getElementById('navChevron');
+        var card = document.getElementById('navAccountCard');
+        var menu = document.getElementById('navAccountMenu');
 
         function applyMode(mode) {
             currentMode = mode;
             localStorage.setItem('accountMode', mode);
-            if (mode === 'demo') {
-                demoBtn.classList.add('active');
-                realBtn.classList.remove('active');
-            } else {
-                realBtn.classList.add('active');
-                demoBtn.classList.remove('active');
-            }
+            updateUI();
             fetchBalance(mode);
+        }
+
+        function updateUI() {
+            var isDemo = currentMode === 'demo';
+            labelEl.textContent = isDemo ? 'ДЕМО АККАУНТ' : 'LIVE АККАУНТ';
+            document.getElementById('navOptLive').style.background = !isDemo ? 'var(--bg-hover)' : '';
+            document.getElementById('navOptDemo').style.background = isDemo ? 'var(--bg-hover)' : '';
+            var rLive = document.getElementById('navRadioLive');
+            var rDemo = document.getElementById('navRadioDemo');
+            rLive.style.borderColor = !isDemo ? 'var(--color-accent)' : 'var(--text-muted)';
+            rLive.style.background = !isDemo ? 'var(--color-accent)' : '';
+            rDemo.style.borderColor = isDemo ? 'var(--color-accent)' : 'var(--text-muted)';
+            rDemo.style.background = isDemo ? 'var(--color-accent)' : '';
         }
 
         function fetchBalance(mode) {
@@ -103,6 +156,8 @@
             .then(function(d) {
                 if (d.balance !== undefined && balanceEl) {
                     balanceEl.textContent = d.balance;
+                    if (mode === 'demo' && demoBalEl) demoBalEl.textContent = '$' + parseFloat(d.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    if (mode === 'real' && liveBalEl) liveBalEl.textContent = '$' + parseFloat(d.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 }
             })
             .catch(function() {});
@@ -110,8 +165,70 @@
 
         window.navSwitchAccount = function(mode) {
             applyMode(mode);
+            toggleNavAccountMenu(null, true);
+            if (typeof window.switchAccount === 'function') window.switchAccount(mode);
         };
 
+        window.toggleNavAccountMenu = function(e, forceClose) {
+            if (e) e.stopPropagation();
+            if (forceClose || menu.style.display === 'block') {
+                menu.style.display = 'none';
+                chevron.style.transform = '';
+            } else {
+                menu.style.display = 'block';
+                chevron.style.transform = 'rotate(180deg)';
+                fetchBalance('demo');
+                fetchBalance('real');
+            }
+        };
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.navbar__account-switcher')) {
+                menu.style.display = 'none';
+                chevron.style.transform = '';
+            }
+        });
+
+        window.openDemoEdit = function() {
+            var wrap = document.getElementById('navDemoEditWrap');
+            var input = document.getElementById('navDemoEditInput');
+            wrap.style.display = 'block';
+            input.value = parseFloat(balanceEl.textContent) || 0;
+            input.focus();
+            input.select();
+        };
+
+        window.closeDemoEdit = function() {
+            document.getElementById('navDemoEditWrap').style.display = 'none';
+        };
+
+        window.saveDemoBalance = function() {
+            var input = document.getElementById('navDemoEditInput');
+            var val = parseFloat(input.value);
+            if (isNaN(val) || val < 0) return;
+
+            fetch('/api/demo/set-balance/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]') ? document.querySelector('[name=csrfmiddlewaretoken]').value : '' },
+                body: JSON.stringify({ balance: val })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+                if (d.success) {
+                    applyMode('demo');
+                    closeDemoEdit();
+                }
+            })
+            .catch(function() {});
+        };
+
+        document.getElementById('navDemoEditInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); saveDemoBalance(); }
+            if (e.key === 'Escape') closeDemoEdit();
+        });
+
+        fetchBalance('demo');
+        fetchBalance('real');
         applyMode(currentMode);
     })();
     </script>

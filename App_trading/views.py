@@ -255,6 +255,32 @@ def reset_demo_account_view(request):
 
 
 @login_required
+def set_demo_balance_api(request):
+    """
+    API для установки баланса демо-счета.
+    POST /api/demo/set-balance/ {"balance": 10000}
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Метод не разрешен'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        new_balance = float(data.get('balance', 0))
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'error': 'Неверные данные'}, status=400)
+
+    if new_balance < 0:
+        return JsonResponse({'error': 'Баланс не может быть отрицательным'}, status=400)
+
+    account = request.user.demo_account
+    account.balance = {'USDT': new_balance}
+    account.total_value_usdt = new_balance
+    account.save()
+
+    return JsonResponse({'success': True, 'balance': new_balance})
+
+
+@login_required
 def trade_view(request):
     """
     Страница торговли в стиле Quotex.

@@ -4,21 +4,425 @@
 {% block title %}Профиль - Al-Tijara{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+.profile-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px;
+}
+
+.profile-hero {
+    background: linear-gradient(135deg, #14171c 0%, #1c2128 100%);
+    border: 1px solid #2b3139;
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(240,185,11,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f0b90b, #d6a509);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.profile-avatar-initials {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0b0e11;
+    text-transform: uppercase;
+}
+
+.profile-hero-info { flex: 1; position: relative; }
+
+.profile-hero-name {
+    font-size: 24px;
+    font-weight: 800;
+    color: #eaecef;
+    margin-bottom: 4px;
+}
+
+.profile-hero-email {
+    font-size: 14px;
+    color: #848e9c;
+    margin-bottom: 8px;
+}
+
+.profile-hero-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.profile-hero-meta-item {
+    font-size: 12px;
+    color: #5e6673;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.profile-hero-meta-item svg {
+    opacity: 0.5;
+}
+
+.profile-hero-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.profile-hero-badge.verified {
+    background: rgba(14,203,129,0.12);
+    color: #0ecb81;
+    border: 1px solid rgba(14,203,129,0.2);
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.profile-stat-card {
+    background: #14171c;
+    border: 1px solid #2b3139;
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.profile-stat-card:hover {
+    border-color: #3a424d;
+}
+
+.profile-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+}
+
+.profile-stat-icon.green { background: rgba(14,203,129,0.12); }
+.profile-stat-icon.yellow { background: rgba(240,185,11,0.12); }
+.profile-stat-icon.blue { background: rgba(51,117,187,0.12); }
+.profile-stat-icon.purple { background: rgba(108,92,231,0.12); }
+
+.profile-stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    font-family: 'Roboto Mono', monospace;
+    color: #eaecef;
+    margin-bottom: 4px;
+}
+
+.profile-stat-label {
+    font-size: 11px;
+    color: #848e9c;
+    font-weight: 500;
+}
+
+.profile-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.profile-section {
+    background: #14171c;
+    border: 1px solid #2b3139;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.profile-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #eaecef;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profile-section-title svg {
+    opacity: 0.6;
+}
+
+.profile-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #1c2128;
+}
+
+.profile-info-row:last-child {
+    border-bottom: none;
+}
+
+.profile-info-label {
+    font-size: 13px;
+    color: #848e9c;
+}
+
+.profile-info-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #eaecef;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.profile-info-value.green { color: #0ecb81; }
+.profile-info-value.red { color: #f6465d; }
+.profile-info-value.yellow { color: #f0b90b; }
+
+.profile-winrate-bar {
+    width: 100%;
+    height: 6px;
+    background: #1c2128;
+    border-radius: 3px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.profile-winrate-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+}
+
+.profile-winrate-fill.good { background: #0ecb81; }
+.profile-winrate-fill.mid { background: #f0b90b; }
+.profile-winrate-fill.bad { background: #f6465d; }
+
+.profile-actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+}
+
+.profile-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid #2b3139;
+    background: #1c2128;
+    color: #eaecef;
+    text-decoration: none;
+}
+
+.profile-action-btn:hover {
+    border-color: #f0b90b;
+    background: rgba(240,185,11,0.08);
+}
+
+.profile-action-btn.primary {
+    background: linear-gradient(135deg, #f0b90b, #d6a509);
+    color: #0b0e11;
+    border: none;
+    font-weight: 700;
+}
+
+.profile-action-btn.primary:hover {
+    box-shadow: 0 4px 20px rgba(240,185,11,0.3);
+}
+
+.profile-action-btn.danger {
+    color: #f6465d;
+}
+
+.profile-action-btn.danger:hover {
+    border-color: #f6465d;
+    background: rgba(246,70,93,0.08);
+}
+
+@media (max-width: 768px) {
+    .profile-stats { grid-template-columns: repeat(2, 1fr); }
+    .profile-sections { grid-template-columns: 1fr; }
+    .profile-hero { flex-direction: column; text-align: center; }
+    .profile-hero-meta { justify-content: center; }
+    .profile-hero-badge { position: static; margin-top: 8px; display: inline-block; }
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="profile">
-    <div class="card" style="max-width:600px; margin:0 auto;">
-        <div class="card__header">
-            <h2 class="card__title">{{ user.username }}</h2>
+<div class="profile-page">
+    <div class="profile-hero">
+        <div class="profile-avatar">
+            <span class="profile-avatar-initials">{{ user.username|truncatechars:2 }}</span>
         </div>
-        <div class="card__body">
-            <p>Email: {{ user.email }}</p>
-            <p>Баланс: <strong class="font-mono">{{ demo_balance }}</strong></p>
-            <p>Общая стоимость: <strong class="font-mono">{{ total_value }} USDT</strong></p>
-            <p>Дата регистрации: {{ user.date_joined|date:"d.m.Y" }}</p>
+        <div class="profile-hero-info">
+            <div class="profile-hero-name">{{ user.username }}</div>
+            <div class="profile-hero-email">{{ user.email|default:"Email не указан" }}</div>
+            <div class="profile-hero-meta">
+                <div class="profile-hero-meta-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="#848e9c"/></svg>
+                    ID: {{ user.id }}
+                </div>
+                <div class="profile-hero-meta-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z" fill="#848e9c"/></svg>
+                    Регистрация: {{ user.date_joined|date:"d.m.Y" }}
+                </div>
+                <div class="profile-hero-meta-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#848e9c"/></svg>
+                    Активен
+                </div>
+            </div>
+            {% if user.is_staff %}
+            <span class="profile-hero-badge verified">Admin</span>
+            {% endif %}
         </div>
+    </div>
+
+    <div class="profile-stats">
+        <div class="profile-stat-card">
+            <div class="profile-stat-icon green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" fill="#0ecb81"/></svg>
+            </div>
+            <div class="profile-stat-value">{{ demo_balance|floatformat:2 }}</div>
+            <div class="profile-stat-label">Demo Баланс USDT</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-icon yellow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="#f0b90b"/></svg>
+            </div>
+            <div class="profile-stat-value">{{ real_balance|floatformat:2 }}</div>
+            <div class="profile-stat-label">Live Баланс USDT</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-icon blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="#3375bb"/></svg>
+            </div>
+            <div class="profile-stat-value">{{ total_trades }}</div>
+            <div class="profile-stat-label">Всего сделок</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-icon purple">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z" fill="#a29bfe"/></svg>
+            </div>
+            <div class="profile-stat-value">{{ win_rate }}%</div>
+            <div class="profile-stat-label">Win Rate</div>
+        </div>
+    </div>
+
+    <div class="profile-sections">
+        <div class="profile-section">
+            <div class="profile-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#848e9c"/></svg>
+                Информация
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Имя пользователя</span>
+                <span class="profile-info-value">{{ user.username }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Email</span>
+                <span class="profile-info-value">{{ user.email|default:"—" }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Дата регистрации</span>
+                <span class="profile-info-value">{{ user.date_joined|date:"d.m.Y" }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Последний вход</span>
+                <span class="profile-info-value">{{ user.last_login|date:"d.m.Y H:i"|default:"—" }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Избранное</span>
+                <span class="profile-info-value">{{ watchlist_count }} пар</span>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="profile-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="#848e9c"/></svg>
+                Торговая статистика
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Всего сделок</span>
+                <span class="profile-info-value">{{ total_trades }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Выиграно</span>
+                <span class="profile-info-value green">{{ win_trades }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Проиграно</span>
+                <span class="profile-info-value red">{{ lose_trades }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label">Win Rate</span>
+                <span class="profile-info-value {% if win_rate >= 60 %}green{% elif win_rate >= 40 %}yellow{% else %}red{% endif %}">{{ win_rate }}%</span>
+            </div>
+            <div class="profile-winrate-bar">
+                <div class="profile-winrate-fill {% if win_rate >= 60 %}good{% elif win_rate >= 40 %}mid{% else %}bad{% endif %}" style="width: {{ win_rate }}%"></div>
+            </div>
+            <div class="profile-info-row" style="margin-top:8px;">
+                <span class="profile-info-label">Общая стоимость</span>
+                <span class="profile-info-value yellow">{{ total_value|floatformat:2 }} USDT</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-actions">
+        <a href="{% url 'trading:trade' %}" class="profile-action-btn primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" fill="currentColor"/></svg>
+            Торговый терминал
+        </a>
+        <a href="{% url 'trading:history' %}" class="profile-action-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" fill="currentColor"/></svg>
+            История сделок
+        </a>
+        <a href="{% url 'analytics:watchlist' %}" class="profile-action-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
+            Избранное
+        </a>
+        <a href="{% url 'users:logout' %}" class="profile-action-btn danger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/></svg>
+            Выйти
+        </a>
     </div>
 </div>
 {% endblock %}
