@@ -349,7 +349,9 @@
     border-radius: var(--border-radius-md);
 }
 
-/* ---------- Адаптив ---------- */
+/* ==========================================================================
+   Адаптив
+   ========================================================================== */
 @media (max-width: 992px) {
     .arbitrage-stat-strip {
         grid-template-columns: repeat(2, 1fr);
@@ -368,10 +370,102 @@
     .opportunity-card__action .btn {
         width: 100%;
     }
+
+    .scanner-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .scanner-filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: var(--spacing-xs);
+    }
+
+    .spread-chart-panel__legend {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+
+    .arb-settings-row {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 768px) {
+    .arbitrage-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: var(--spacing-md);
+    }
+
+    .arbitrage-hero__title {
+        font-size: 1.2rem;
+    }
+
+    .arbitrage-stat {
+        padding: var(--spacing-sm);
+    }
+
+    .arbitrage-stat__value {
+        font-size: 1.2rem;
+    }
+
+    .arbitrage-stat__label {
+        font-size: 0.65rem;
+    }
+
+    .opportunity-card {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-sm);
+    }
+
+    .opportunity-card__pair {
+        font-size: 0.85rem;
+    }
+
+    .opportunity-card__spread {
+        font-size: 0.95rem;
+    }
+
+    .spread-chart-panel {
+        padding: var(--spacing-sm);
+    }
+
+    .spread-chart-panel__canvas {
+        height: 280px;
+    }
+
+    .arb-settings-section {
+        padding: var(--spacing-md);
+    }
+
+    .exchange-toggle-list__item {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
 }
 
 @media (max-width: 576px) {
     .arbitrage-stat-strip {
         grid-template-columns: 1fr;
+    }
+
+    .opportunity-card {
+        grid-template-columns: 1fr;
+        text-align: left;
+    }
+
+    .opportunity-card__route {
+        flex-wrap: wrap;
+    }
+
+    .spread-chart-panel__canvas {
+        height: 220px;
+    }
+
+    .scanner-filter-chip {
+        padding: 4px 10px;
+        font-size: 0.7rem;
     }
 }

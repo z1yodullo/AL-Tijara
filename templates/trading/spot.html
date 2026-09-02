@@ -113,26 +113,26 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th class="hide-mobile">ID</th>
                         <th>Сторона</th>
-                        <th>Тип</th>
+                        <th class="hide-mobile">Тип</th>
                         <th>Цена</th>
                         <th>Кол-во</th>
-                        <th>СЛ</th>
-                        <th>ТП</th>
+                        <th class="hide-mobile">СЛ</th>
+                        <th class="hide-mobile">ТП</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for o in open_orders %}
                     <tr>
-                        <td class="font-mono">{{ o.id }}</td>
+                        <td class="font-mono hide-mobile">{{ o.id }}</td>
                         <td><span class="badge badge--{% if o.side == 'BUY' %}success{% else %}danger{% endif %}">{% if o.side == 'BUY' %}Покупка{% else %}Продажа{% endif %}</span></td>
-                        <td>{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
+                        <td class="hide-mobile">{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
                         <td class="font-mono">{{ o.price|default:"-" }}</td>
                         <td class="font-mono">{{ o.quantity }}</td>
-                        <td class="font-mono text-danger">{{ o.stop_loss|default:"-" }}</td>
-                        <td class="font-mono text-success">{{ o.take_profit|default:"-" }}</td>
+                        <td class="font-mono text-danger hide-mobile">{{ o.stop_loss|default:"-" }}</td>
+                        <td class="font-mono text-success hide-mobile">{{ o.take_profit|default:"-" }}</td>
                         <td>
                             <form method="post" action="{% url 'trading:cancel_order' o.id %}" style="display:inline;">
                                 {% csrf_token %}

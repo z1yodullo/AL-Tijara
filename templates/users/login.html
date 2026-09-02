@@ -8,30 +8,30 @@
 {% endblock %}
 
 {% block content %}
-<div class="auth-form">
-    <div class="card" style="max-width:400px; margin:0 auto;">
-        <div class="card__header">
-            <h2 class="card__title">Вход</h2>
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-card__logo">
+            <span style="font-size:1.5rem;font-weight:800;color:var(--color-accent);">Al-Tijara</span>
         </div>
-        <div class="card__body">
-            <form method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                <div class="form-group">
-                    <label class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                    {% for error in field.errors %}
-                    <div class="form-error">{{ error }}</div>
-                    {% endfor %}
-                    {% endif %}
-                </div>
+        <h2 class="auth-card__title">Вход</h2>
+        <p class="auth-card__subtitle">Войдите в свой аккаунт</p>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                {% for error in field.errors %}
+                <div class="form-error">{{ error }}</div>
                 {% endfor %}
-                <button type="submit" class="btn btn--primary btn--full">Войти</button>
-            </form>
-            <p class="mt-md text-center text-secondary">
-                Нет аккаунта? <a href="{% url 'users:register' %}" style="color:var(--color-accent);">Зарегистрироваться</a>
-            </p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn--primary btn--full auth-form__submit">Войти</button>
+        </form>
+        <div class="auth-card__footer">
+            Нет аккаунта? <a href="{% url 'users:register' %}">Зарегистрироваться</a>
         </div>
     </div>
 </div>

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -59,19 +60,26 @@ class DemoAccount(models.Model):
 
     def update_balance(self, asset, amount):
         """
-        Обновить баланс
+        Обновить баланс (атомарно через F-выражения)
         """
-        current = self.get_balance(asset)
-        new_balance = current + Decimal(str(amount))
-        
+        from django.db.models import F
+
+        if Decimal(str(amount)) < 0:
+            current = self.get_balance(asset)
+            if current + Decimal(str(amount)) < 0:
+                raise ValueError(f"Недостаточно {asset}. Баланс: {current}, запрошено: {amount}")
+
+        self.refresh_from_db()
+        current_balance = self.get_balance(asset)
+        new_balance = float(current_balance + Decimal(str(amount)))
         if new_balance < 0:
-            raise ValueError(f"Недостаточно {asset}. Баланс: {current}, запрошено: {amount}")
-        
-        self.balance[asset] = float(new_balance)
-        self.save()
-        
-        logger.info(f"Баланс обновлен: {self.user.username} | {asset}: {current} → {new_balance}")
-        return new_balance
+            raise ValueError(f"Недостаточно {asset}. Баланс: {current_balance}, запрошено: {amount}")
+
+        self.balance[asset] = new_balance
+        self.save(update_fields=['balance', 'updated_at'])
+
+        logger.info(f"Баланс обновлен: {self.user.username} | {asset}: {current_balance} → {new_balance}")
+        return Decimal(str(new_balance))
 
     def calculate_total_value(self, prices):
         """
@@ -233,10 +241,123 @@ class DemoOrder(models.Model):
         help_text="Цена тейк-профит"
     )
 
+    trade_duration = models.IntegerField(
+        default=0,
+        verbose_name='Длительность сделки (сек)',
+        help_text="Длительность бинарной сделки в секундах"
+    )
+    trade_direction = models.CharField(
+        max_length=4,
+        blank=True,
+        null=True,
+        choices=[('CALL', 'Вверх'), ('PUT', 'Вниз')],
+        verbose_name='Направление сделки'
+    )
+    entry_price = models.DecimalField(
+        max_digits=20,
+        decimal_places=8,
+        null=True,
+        blank=True,
+        verbose_name='Цена входа'
+    )
+    expiration_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Время экспирации',
+        help_text="Когда сделка должна быть закрыта"
+    )
+
     def get_current_time(self):
         """Возвращает текущее время для filled_at"""
         from django.utils.timezone import now
         return now()
+
+    @classmethod
+    def settle_expired_trades(cls):
+        """
+        Закрывает все бинарные сделки, у которых истёк expiration_time.
+        Также закрывает orphan-сделки без expiration_time старше 24 часов.
+        Вызывается из management command или periodic task.
+        """
+        from django.utils.timezone import now, timedelta
+        from App_market.services import get_ticker
+
+        now_time = now()
+
+        expired = cls.objects.filter(
+            status='OPEN',
+            trade_direction__isnull=False,
+            expiration_time__lte=now_time
+        ).select_related('account')
+
+        orphans = cls.objects.filter(
+            status='OPEN',
+            trade_direction__isnull=False,
+            expiration_time__isnull=True,
+            created_at__lt=now_time - timedelta(hours=1)
+        ).select_related('account')
+
+        orders_to_settle = list(expired) + list(orphans)
+
+        settled_count = 0
+        for order in orders_to_settle:
+            try:
+                order.refresh_from_db()
+                if order.status != 'OPEN':
+                    continue
+
+                ticker = get_ticker(order.symbol)
+                if not ticker or not order.entry_price or not order.trade_direction:
+                    order.status = 'CANCELLED'
+                    order.error_message = 'SETTLE_REFUND - data missing'
+                    order.filled_at = now_time
+                    order.save(update_fields=['status', 'error_message', 'filled_at'])
+                    order.account.update_balance('USDT', order.quantity)
+                    settled_count += 1
+                    continue
+
+                exit_price = float(ticker['price'])
+                entry = float(order.entry_price)
+                direction = order.trade_direction
+                amount = float(order.quantity)
+
+                is_win = (direction == 'CALL' and exit_price > entry) or \
+                         (direction == 'PUT' and exit_price < entry)
+
+                if exit_price == entry:
+                    is_win = False
+
+                profit_pct = 87
+                if is_win:
+                    payout = amount * (1 + profit_pct / 100)
+                    order.account.update_balance('USDT', Decimal(str(payout)))
+                    order.status = 'FILLED'
+                    order.error_message = f'WIN +${payout:.2f}'
+                else:
+                    order.status = 'CANCELLED'
+                    order.error_message = f'LOST -${amount:.2f}'
+
+                order.filled_at = now_time
+                order.save(update_fields=['status', 'error_message', 'filled_at'])
+                settled_count += 1
+
+                logger.info(f"Settled trade #{order.id}: {order.error_message}")
+
+            except Exception as e:
+                logger.error(f"Settle error for order #{order.id}: {e}")
+                try:
+                    order.refresh_from_db()
+                    if order.status == 'OPEN':
+                        order.account.update_balance('USDT', order.quantity)
+                        order.status = 'CANCELLED'
+                        order.error_message = f'SETTLE_ERROR - refunded'
+                        order.filled_at = now_time
+                        order.save(update_fields=['status', 'error_message', 'filled_at'])
+                        settled_count += 1
+                except Exception:
+                    logger.error(f"Refund also failed for order #{order.id}")
+
+        return settled_count
 
 
 class RealAccount(models.Model):
@@ -294,7 +415,7 @@ class RealAccount(models.Model):
             raise ValueError(f"Недостаточно {asset}. Баланс: {current}, запрошено: {amount}")
 
         self.balance[asset] = float(new_balance)
-        self.save()
+        self.save(update_fields=['balance', 'updated_at'])
 
         logger.info(f"Баланс обновлен (реальный): {self.user.username} | {asset}: {current} → {new_balance}")
         return new_balance

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Al-Tijara{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
     <style>
     .nav-account-option:hover { background: var(--bg-hover); }
     .nav-account-radio::after { content: ''; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--bg-primary); display: none; }
@@ -18,7 +19,10 @@
     <header>
         <nav class="navbar">
             <a href="{% url 'trading:dashboard' %}" class="navbar__logo">Al-Tijara</a>
-            <div class="navbar__menu">
+            <button class="navbar__burger" id="navBurger" onclick="toggleMobileMenu()" aria-label="Меню">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <div class="navbar__menu" id="navMenu">
                 {% if user.is_authenticated %}
                 <a href="{% url 'trading:dashboard' %}" class="navbar__link {% block nav_dashboard %}{% endblock %}">Главная</a>
                 <a href="{% url 'trading:trade' %}" class="navbar__link {% block nav_trade %}{% endblock %}">Торговый терминал</a>
@@ -233,6 +237,49 @@
     })();
     </script>
     {% endif %}
+
+    <script>
+    function toggleMobileMenu() {
+        var menu = document.getElementById('navMenu');
+        var burger = document.getElementById('navBurger');
+        menu.classList.toggle('mobile-open');
+        burger.classList.toggle('active');
+    }
+
+    document.querySelectorAll('.navbar__dropdown').forEach(function(dd) {
+        dd.addEventListener('click', function(e) {
+            if (window.innerWidth > 992) return;
+            e.preventDefault();
+            e.stopPropagation();
+            var menu = dd.querySelector('.navbar__dropdown-menu');
+            var isOpen = menu.style.display === 'block';
+            document.querySelectorAll('.navbar__dropdown-menu').forEach(function(m) { m.style.display = ''; });
+            if (!isOpen) menu.style.display = 'block';
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.navbar__dropdown')) {
+            document.querySelectorAll('.navbar__dropdown-menu').forEach(function(m) { m.style.display = ''; });
+        }
+        if (!e.target.closest('.navbar') && !e.target.closest('.navbar__menu')) {
+            var menu = document.getElementById('navMenu');
+            var burger = document.getElementById('navBurger');
+            if (menu) menu.classList.remove('mobile-open');
+            if (burger) burger.classList.remove('active');
+        }
+    });
+
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 992) {
+            var menu = document.getElementById('navMenu');
+            var burger = document.getElementById('navBurger');
+            if (menu) menu.classList.remove('mobile-open');
+            if (burger) burger.classList.remove('active');
+            document.querySelectorAll('.navbar__dropdown-menu').forEach(function(m) { m.style.display = ''; });
+        }
+    });
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

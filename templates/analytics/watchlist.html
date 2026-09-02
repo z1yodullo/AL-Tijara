@@ -30,7 +30,7 @@
                         <th>Пара</th>
                         <th>Цена</th>
                         <th>Изм. 24ч</th>
-                        <th>Добавлен</th>
+                        <th class="hide-mobile">Добавлен</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -44,7 +44,7 @@
                         <td class="font-mono {% if item.change > 0 %}text-success{% elif item.change < 0 %}text-danger{% endif %}">
                             {{ item.change|default:"-" }}%
                         </td>
-                        <td>{{ item.added_at|date:"d.m.Y H:i" }}</td>
+                        <td class="hide-mobile">{{ item.added_at|date:"d.m.Y H:i" }}</td>
                         <td>
                             <form method="post" action="{% url 'analytics:remove_watchlist' item.id %}" style="display:inline;">
                                 {% csrf_token %}

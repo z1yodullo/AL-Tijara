@@ -35,10 +35,10 @@
                 <thead>
                     <tr>
                         <th>Пара А</th>
-                        <th>Пара Б</th>
-                        <th>Кросс пара</th>
-                        <th>Цена А</th>
-                        <th>Расчётная цена</th>
+                        <th class="hide-mobile">Пара Б</th>
+                        <th class="hide-mobile">Кросс пара</th>
+                        <th class="hide-mobile">Цена А</th>
+                        <th class="hide-mobile">Расчётная цена</th>
                         <th>Спред</th>
                         <th>Направление</th>
                     </tr>
@@ -47,10 +47,10 @@
                     {% for opp in opportunities %}
                     <tr>
                         <td class="font-mono">{{ opp.pair_a }}</td>
-                        <td class="font-mono">{{ opp.pair_b }}</td>
-                        <td class="font-mono">{{ opp.pair_cross }}</td>
-                        <td class="font-mono">{{ opp.price_a }}</td>
-                        <td class="font-mono">{{ opp.implied_price }}</td>
+                        <td class="font-mono hide-mobile">{{ opp.pair_b }}</td>
+                        <td class="font-mono hide-mobile">{{ opp.pair_cross }}</td>
+                        <td class="font-mono hide-mobile">{{ opp.price_a }}</td>
+                        <td class="font-mono hide-mobile">{{ opp.implied_price }}</td>
                         <td class="font-mono {% if opp.spread_pct > 0 %}text-success{% else %}text-danger{% endif %}">
                             {{ opp.spread_pct }}%
                         </td>

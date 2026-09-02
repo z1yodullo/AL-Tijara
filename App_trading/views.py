@@ -333,7 +333,7 @@ def trade_klines_api(request):
 
     tf_map = {
         '1m': '1m', '5m': '5m', '15m': '15m', '30m': '30m',
-        '1h': '1h', '4h': '4h', '1d': '1d',
+        '1h': '1h', '2h': '2h', '4h': '4h', '1d': '1d', '1w': '1w',
     }
     timeframe = tf_map.get(timeframe, '1m')
 
@@ -425,6 +425,9 @@ def place_binary_trade(request):
 
     account.update_balance('USDT', -amount)
 
+    from django.utils.timezone import now, timedelta
+    expiration = now() + timedelta(seconds=duration)
+
     order = DemoOrder.objects.create(
         account=account,
         symbol=symbol,
@@ -434,22 +437,34 @@ def place_binary_trade(request):
         quantity=amount,
         filled_quantity=amount,
         status='OPEN',
+        trade_duration=duration,
+        trade_direction=direction,
+        entry_price=Decimal(str(entry_price)),
+        expiration_time=expiration,
     )
 
-    from django.utils.timezone import now, timedelta
     import threading
 
     def resolve_trade():
         import time
         time.sleep(duration)
         try:
+            order.refresh_from_db()
+            if order.status != 'OPEN':
+                return
+
             current_ticker = get_ticker(symbol)
             if not current_ticker:
+                order.status = 'CANCELLED'
+                order.error_message = 'TICKER_UNAVAILABLE - refunded'
+                order.filled_at = now()
+                order.save(update_fields=['status', 'error_message', 'filled_at'])
+                account.update_balance('USDT', amount)
                 return
 
             exit_price = float(current_ticker['price'])
-            is_win = False
 
+            is_win = False
             if direction == 'CALL' and exit_price > entry_price:
                 is_win = True
             elif direction == 'PUT' and exit_price < entry_price:
@@ -466,12 +481,23 @@ def place_binary_trade(request):
                 order.error_message = f'LOST -${float(amount):.2f}'
 
             order.filled_at = now()
-            order.save()
+            order.save(update_fields=['status', 'error_message', 'filled_at'])
 
         except Exception as e:
             logger.error(f"Trade resolve error: {e}")
+            try:
+                order.refresh_from_db()
+                if order.status == 'OPEN':
+                    account.update_balance('USDT', amount)
+                    order.status = 'CANCELLED'
+                    order.error_message = f'SETTLE_ERROR - refunded'
+                    order.filled_at = now()
+                    order.save(update_fields=['status', 'error_message', 'filled_at'])
+            except Exception:
+                logger.error(f"Trade refund also failed for order #{order.id}")
 
-    thread = threading.Thread(target=resolve_trade, daemon=True)
+    thread = threading.Thread(target=resolve_trade)
+    thread.daemon = False
     thread.start()
 
     return JsonResponse({

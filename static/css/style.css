@@ -244,6 +244,13 @@ header {
     display: block;
 }
 
+/* Touch devices: disable hover menus, use click instead */
+@media (hover: none) {
+    .navbar__dropdown:hover .navbar__dropdown-menu {
+        display: none;
+    }
+}
+
 .navbar__dropdown-item {
     display: block;
     padding: var(--spacing-sm) var(--spacing-md);
@@ -258,7 +265,20 @@ header {
 
 .navbar__burger {
     display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
 }
+.navbar__burger:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+.navbar__burger.active { color: var(--color-accent); border-color: var(--color-accent); }
+.navbar__burger svg { width: 20px; height: 20px; }
 
 /* ---------- Переключатель счёта в навбаре ---------- */
 .navbar__account-switcher {
@@ -269,6 +289,7 @@ header {
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-md);
+    cursor: pointer;
 }
 
 .navbar__account-toggle {
@@ -707,3 +728,30 @@ footer {
 .mb-md { margin-bottom: var(--spacing-md); }
 .mb-lg { margin-bottom: var(--spacing-lg); }
 .hidden { display: none !important; }
+
+/* ==========================================================================
+   Мобильные утилиты
+   ========================================================================== */
+@media (max-width: 576px) {
+    .text-center-mobile {
+        text-align: center !important;
+    }
+
+    .flex-col-mobile {
+        flex-direction: column !important;
+    }
+
+    .gap-sm-mobile {
+        gap: var(--spacing-sm) !important;
+    }
+
+    .w-full-mobile {
+        width: 100% !important;
+    }
+
+    .no-wrap-mobile {
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}

@@ -61,8 +61,34 @@
         background-color: var(--bg-secondary);
         border-bottom: 1px solid var(--border-color);
         padding: var(--spacing-md);
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
         z-index: 99;
+        box-shadow: var(--shadow-lg);
+        max-height: calc(100vh - var(--header-height));
+        overflow-y: auto;
+    }
+
+    .navbar__menu.mobile-open .navbar__link {
+        padding: var(--spacing-sm) 0;
+        font-size: 1rem;
+    }
+
+    .navbar__menu.mobile-open .navbar__dropdown-menu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        background: var(--bg-tertiary);
+        border-radius: var(--border-radius-sm);
+        margin-top: var(--spacing-xs);
+        display: none;
+    }
+
+    .navbar__menu.mobile-open .navbar__account-switcher {
+        width: 100%;
+    }
+
+    .navbar__menu.mobile-open .navbar__account-switcher > div:first-child {
+        flex: 1;
     }
 
     /* Карточки статистики / рынка в две колонки */
@@ -72,6 +98,37 @@
 
     .footer__grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Pair header на мобильных */
+    .pair-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .pair-header__stats {
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
+    }
+
+    /* Arb stat strip */
+    .arbitrage-stat-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .opportunity-card {
+        grid-template-columns: 1fr 1fr;
+        row-gap: var(--spacing-sm);
+    }
+
+    .opportunity-card__action {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+    }
+
+    .opportunity-card__action .btn {
+        width: 100%;
     }
 }
 
@@ -97,6 +154,10 @@
     .form-row {
         flex-direction: column;
         gap: 0;
+    }
+
+    .form-row .form-group {
+        flex: auto;
     }
 
     /* Таблицы со скроллом по горизонтали */
@@ -133,6 +194,45 @@
     .spread-chart-panel__canvas {
         height: 280px;
     }
+
+    /* Profile page */
+    .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-sections {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-hero {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-hero-meta {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .profile-hero-badge {
+        position: static;
+        margin-top: 8px;
+        display: inline-block;
+    }
+
+    /* PnL summary */
+    .pnl-summary {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ==========================================================================
@@ -157,7 +257,7 @@
     }
 
     .navbar__logo span {
-        display: none; /* оставляем только иконку логотипа */
+        display: none;
     }
 
     /* Единая колонка почти везде */
@@ -225,7 +325,7 @@
         width: 100%;
     }
 
-    /* Виджеты дашборда в одну колонку (дублирует dashboard.css на всякий случай) */
+    /* Виджеты дашборда в одну колонку */
     .stats-grid,
     .dashboard-grid,
     .pnl-summary {
@@ -242,6 +342,122 @@
         padding: var(--spacing-md);
         align-items: flex-start;
         padding-top: var(--spacing-xl);
+    }
+
+    /* Profile page */
+    .profile-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-stat-card {
+        padding: 12px;
+    }
+
+    .profile-stat-value {
+        font-size: 1.3rem;
+    }
+
+    .profile-hero {
+        padding: 16px;
+    }
+
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+    }
+
+    .profile-avatar-initials {
+        font-size: 1.5rem;
+    }
+
+    .profile-hero-name {
+        font-size: 1.2rem;
+    }
+
+    .profile-hero-meta-item {
+        font-size: 0.75rem;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+    }
+
+    .profile-action-btn {
+        width: 100%;
+    }
+
+    /* Arb stat strip */
+    .arbitrage-stat-strip {
+        grid-template-columns: 1fr;
+    }
+
+    /* Market toolbar */
+    .market-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .market-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .market-search {
+        max-width: none;
+    }
+
+    /* Orders toolbar */
+    .orders-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .orders-filters {
+        flex-wrap: wrap;
+    }
+
+    /* Scanner toolbar */
+    .scanner-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .scanner-filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: var(--spacing-xs);
+    }
+
+    /* Arbitrage hero */
+    .arbitrage-hero {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* Indicator grid */
+    .indicator-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* AI modal */
+    .ai-modal {
+        max-height: 90vh;
+        margin: var(--spacing-sm);
+    }
+
+    .ai-best-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .ai-meta-row {
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+    }
+
+    .ai-reasons {
+        gap: var(--spacing-xs);
     }
 }
 
@@ -270,6 +486,24 @@
     .position-card__grid {
         grid-template-columns: 1fr;
     }
+
+    .profile-action-btn {
+        font-size: 0.75rem;
+        padding: 10px;
+    }
+}
+
+/* ==========================================================================
+   Торговая страница (spot/futures) — адаптив
+   ========================================================================== */
+@media (max-width: 992px) {
+    .trading-layout {
+        grid-template-columns: 1fr;
+    }
+    .trading-layout__chart { grid-column: 1; }
+    .trading-layout__book { grid-column: 1; }
+    .trading-layout__pairs { grid-column: 1; }
+    .trading-layout__panel { grid-column: 1; }
 }
 
 /* ==========================================================================
@@ -299,5 +533,32 @@
 
     .card:hover {
         border-color: var(--border-color);
+    }
+
+    .navbar__dropdown:hover .navbar__dropdown-menu {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   Утилиты для скрытия/показа элементов на разных экранах
+   ========================================================================== */
+@media (min-width: 769px) {
+    .show-mobile-only {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .show-mobile-only {
+        display: block !important;
+    }
+
+    .show-mobile-only-flex {
+        display: flex !important;
     }
 }

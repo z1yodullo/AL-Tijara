@@ -354,7 +354,9 @@
 .trade-row__amount { text-align: right; color: var(--text-secondary); }
 .trade-row__time { text-align: right; color: var(--text-muted); }
 
-/* ---------- Адаптив для рыночного дашборда ---------- */
+/* ==========================================================================
+   Адаптив для рыночного дашборда
+   ========================================================================== */
 @media (max-width: 992px) {
     .pair-header {
         flex-direction: column;
@@ -364,5 +366,138 @@
     .pair-header__stats {
         flex-wrap: wrap;
         gap: var(--spacing-md);
+    }
+
+    .market-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .market-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: var(--spacing-xs);
+    }
+
+    .market-search {
+        max-width: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .pair-header {
+        padding: var(--spacing-md);
+        gap: var(--spacing-md);
+    }
+
+    .pair-header__info {
+        gap: var(--spacing-sm);
+    }
+
+    .pair-header__icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .pair-header__name {
+        font-size: 1rem;
+    }
+
+    .pair-header__stats {
+        gap: var(--spacing-sm);
+    }
+
+    .pair-stat__label {
+        font-size: 0.65rem;
+    }
+
+    .pair-stat__value {
+        font-size: 0.8rem;
+    }
+
+    .pair-header__price {
+        font-size: 1.4rem;
+    }
+
+    .pair-header__change {
+        font-size: 0.8rem;
+    }
+
+    .chart-panel__toolbar {
+        padding: var(--spacing-sm);
+    }
+
+    .chart-intervals__btn {
+        padding: 3px 7px;
+        font-size: 0.7rem;
+    }
+
+    .chart-panel__canvas {
+        height: 300px;
+        padding: var(--spacing-sm);
+    }
+
+    .orderbook {
+        padding: var(--spacing-sm);
+    }
+
+    .orderbook__columns {
+        font-size: 0.65rem;
+    }
+
+    .orderbook-row {
+        font-size: 0.72rem;
+        padding: 2px 0;
+    }
+
+    .recent-trades {
+        padding: var(--spacing-sm);
+    }
+
+    .trade-row {
+        font-size: 0.72rem;
+    }
+
+    .sparkline {
+        width: 70px;
+        height: 24px;
+    }
+}
+
+@media (max-width: 576px) {
+    .pair-header {
+        padding: var(--spacing-sm);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .pair-header__price {
+        font-size: 1.2rem;
+    }
+
+    .market-tabs__item {
+        padding: 4px 12px;
+        font-size: 0.75rem;
+    }
+
+    .chart-panel__canvas {
+        height: 250px;
+    }
+
+    .orderbook__columns,
+    .orderbook-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .orderbook__columns span:last-child,
+    .orderbook-row span:last-child {
+        display: none;
+    }
+
+    .trade-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .trade-row span:last-child {
+        display: none;
     }
 }

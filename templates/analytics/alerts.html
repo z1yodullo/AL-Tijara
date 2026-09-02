@@ -45,7 +45,7 @@
                         <th>Пара</th>
                         <th>Направление</th>
                         <th>Целевая цена</th>
-                        <th>Создан</th>
+                        <th class="hide-mobile">Создан</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -59,7 +59,7 @@
                             </span>
                         </td>
                         <td class="font-mono">{{ alert.target_price }}</td>
-                        <td>{{ alert.created_at|date:"d.m.Y H:i" }}</td>
+                        <td class="hide-mobile">{{ alert.created_at|date:"d.m.Y H:i" }}</td>
                         <td>
                             <form method="post" action="{% url 'analytics:delete_alert' alert.id %}" style="display:inline;">
                                 {% csrf_token %}
@@ -87,7 +87,7 @@
                         <th>Пара</th>
                         <th>Направление</th>
                         <th>Целевая цена</th>
-                        <th>Время срабатывания</th>
+                        <th class="hide-mobile">Время срабатывания</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -100,7 +100,7 @@
                             </span>
                         </td>
                         <td class="font-mono">{{ alert.target_price }}</td>
-                        <td>{{ alert.triggered_at|date:"d.m.Y H:i" }}</td>
+                        <td class="hide-mobile">{{ alert.triggered_at|date:"d.m.Y H:i" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

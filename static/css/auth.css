@@ -254,15 +254,46 @@
 }
 
 /* ---------- Мобильная адаптация карточки ---------- */
-@media (max-width: 480px) {
+@media (max-width: 576px) {
+    .auth-page {
+        padding: var(--spacing-md) var(--spacing-sm);
+        align-items: flex-start;
+        padding-top: var(--spacing-lg);
+    }
+
     .auth-card {
-        padding: var(--spacing-lg);
+        padding: var(--spacing-lg) var(--spacing-md);
         border-radius: var(--border-radius-md);
+    }
+
+    .auth-card__title {
+        font-size: 1.25rem;
+    }
+
+    .otp-inputs {
+        gap: var(--spacing-xs);
     }
 
     .otp-inputs__cell {
         width: 40px;
         height: 48px;
         font-size: 1.25rem;
+    }
+
+    .auth-social__btn {
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .auth-card {
+        padding: var(--spacing-md);
+    }
+
+    .otp-inputs__cell {
+        width: 36px;
+        height: 44px;
+        font-size: 1.1rem;
     }
 }

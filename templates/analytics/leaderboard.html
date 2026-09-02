@@ -16,9 +16,9 @@
                         <th>#</th>
                         <th>Трейдер</th>
                         <th>Стоимость портфеля</th>
-                        <th>Всего сделок</th>
-                        <th>Объём</th>
-                        <th>С</th>
+                        <th class="hide-mobile">Всего сделок</th>
+                        <th class="hide-mobile">Объём</th>
+                        <th class="hide-mobile">С</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,9 +34,9 @@
                             <strong>{% if user.username == entry.username %}{{ entry.username }} (Вы){% else %}{{ entry.username }}{% endif %}</strong>
                         </td>
                         <td class="font-mono">{{ entry.total_value }} USDT</td>
-                        <td>{{ entry.total_trades }}</td>
-                        <td class="font-mono">{{ entry.total_volume }}</td>
-                        <td>{{ entry.created_at|date:"d.m.Y" }}</td>
+                        <td class="hide-mobile">{{ entry.total_trades }}</td>
+                        <td class="font-mono hide-mobile">{{ entry.total_volume }}</td>
+                        <td class="hide-mobile">{{ entry.created_at|date:"d.m.Y" }}</td>
                     </tr>
                     {% empty %}
                     <tr><td colspan="6" class="text-muted">Пока нет трейдеров</td></tr>

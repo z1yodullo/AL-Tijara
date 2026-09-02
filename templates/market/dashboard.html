@@ -43,7 +43,7 @@
                         <th>Пара</th>
                         <th>Цена</th>
                         <th>Изм. 24ч</th>
-                        <th>Объём</th>
+                        <th class="hide-mobile">Объём</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -55,7 +55,7 @@
                         <td class="font-mono {% if t.change > 0 %}text-success{% elif t.change < 0 %}text-danger{% endif %}">
                             {{ t.change }}%
                         </td>
-                        <td class="font-mono text-secondary">{{ t.volume }}</td>
+                        <td class="font-mono text-secondary hide-mobile">{{ t.volume }}</td>
                         <td>
                             <a href="{% url 'trading:trading' %}?symbol={{ t.symbol }}" class="btn btn--primary btn--sm">Торговать</a>
                         </td>
@@ -77,7 +77,7 @@
                         <tr>
                             <th>Пара</th>
                             <th>Сторона</th>
-                            <th>Тип</th>
+                            <th class="hide-mobile">Тип</th>
                             <th>Цена</th>
                             <th>Кол-во</th>
                         </tr>
@@ -87,7 +87,7 @@
                         <tr>
                             <td class="font-mono">{{ o.symbol }}</td>
                             <td><span class="badge badge--{% if o.side == 'BUY' %}success{% else %}danger{% endif %}">{% if o.side == 'BUY' %}Покупка{% else %}Продажа{% endif %}</span></td>
-                            <td>{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
+                            <td class="hide-mobile">{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
                             <td class="font-mono">{{ o.price|default:"-" }}</td>
                             <td class="font-mono">{{ o.quantity }}</td>
                         </tr>

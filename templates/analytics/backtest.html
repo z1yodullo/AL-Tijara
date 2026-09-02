@@ -55,11 +55,11 @@
                     <tr>
                         <th>Стратегия</th>
                         <th>Пара</th>
-                        <th>Сделок</th>
+                        <th class="hide-mobile">Сделок</th>
                         <th>Win Rate</th>
                         <th>Доходность</th>
-                        <th>Макс. просадка</th>
-                        <th>Дата</th>
+                        <th class="hide-mobile">Макс. просадка</th>
+                        <th class="hide-mobile">Дата</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,13 +67,13 @@
                     <tr>
                         <td class="font-mono">{{ result.strategy.strategy_type }}</td>
                         <td class="font-mono">{{ result.strategy.symbol }}</td>
-                        <td>{{ result.total_trades }}</td>
+                        <td class="hide-mobile">{{ result.total_trades }}</td>
                         <td class="{% if result.win_rate > 50 %}text-success{% else %}text-danger{% endif %}">{{ result.win_rate }}%</td>
                         <td class="font-mono {% if result.total_return > 0 %}text-success{% elif result.total_return < 0 %}text-danger{% endif %}">
                             {{ result.total_return }}%
                         </td>
-                        <td class="text-danger">{{ result.max_drawdown }}%</td>
-                        <td>{{ result.created_at|date:"d.m.Y H:i" }}</td>
+                        <td class="text-danger hide-mobile">{{ result.max_drawdown }}%</td>
+                        <td class="hide-mobile">{{ result.created_at|date:"d.m.Y H:i" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -280,9 +280,31 @@
 @media (max-width: 768px) {
     .profile-stats { grid-template-columns: repeat(2, 1fr); }
     .profile-sections { grid-template-columns: 1fr; }
-    .profile-hero { flex-direction: column; text-align: center; }
-    .profile-hero-meta { justify-content: center; }
+    .profile-hero { flex-direction: column; text-align: center; padding: 20px; }
+    .profile-hero-meta { justify-content: center; flex-wrap: wrap; }
     .profile-hero-badge { position: static; margin-top: 8px; display: inline-block; }
+    .profile-info-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .profile-info-value { text-align: right; width: 100%; }
+    .profile-actions { flex-direction: column; }
+    .profile-action-btn { width: 100%; }
+}
+@media (max-width: 576px) {
+    .profile-page { padding: 12px 8px; }
+    .profile-stats { grid-template-columns: 1fr; }
+    .profile-stat-card { padding: 12px; }
+    .profile-stat-value { font-size: 1.2rem; }
+    .profile-stat-label { font-size: 0.65rem; }
+    .profile-hero { padding: 16px 12px; }
+    .profile-avatar { width: 60px; height: 60px; }
+    .profile-avatar-initials { font-size: 1.4rem; }
+    .profile-hero-name { font-size: 1.1rem; }
+    .profile-hero-email { font-size: 0.75rem; }
+    .profile-hero-meta-item { font-size: 0.7rem; }
+    .profile-section { padding: 14px; }
+    .profile-section-title { font-size: 0.85rem; margin-bottom: 12px; }
+    .profile-info-label { font-size: 0.75rem; }
+    .profile-info-value { font-size: 0.75rem; }
+    .profile-winrate-bar { margin-top: 8px; }
 }
 </style>
 {% endblock %}

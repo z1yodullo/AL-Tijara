@@ -314,6 +314,33 @@
     }
 }
 
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pnl-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-welcome {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stat-widget {
+        padding: var(--spacing-md);
+    }
+
+    .stat-widget__value {
+        font-size: 1.3rem;
+    }
+
+    .portfolio-widget__total {
+        font-size: 1.5rem;
+    }
+}
+
 @media (max-width: 576px) {
     .stats-grid {
         grid-template-columns: 1fr;
@@ -321,5 +348,49 @@
 
     .pnl-summary {
         grid-template-columns: 1fr;
+    }
+
+    .stat-widget {
+        padding: var(--spacing-md);
+    }
+
+    .stat-widget__icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .stat-widget__value {
+        font-size: 1.2rem;
+    }
+
+    .pnl-summary__item {
+        padding: var(--spacing-sm);
+    }
+
+    .pnl-summary__value {
+        font-size: 1rem;
+    }
+
+    .leaderboard-item {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        gap: var(--spacing-sm);
+    }
+
+    .leaderboard-item__rank {
+        width: 24px;
+        font-size: 0.75rem;
+    }
+
+    .leaderboard-item__avatar {
+        width: 28px;
+        height: 28px;
+    }
+
+    .leaderboard-item__name {
+        font-size: 0.8rem;
+    }
+
+    .leaderboard-item__pnl {
+        font-size: 0.75rem;
     }
 }

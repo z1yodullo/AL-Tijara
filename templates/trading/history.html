@@ -57,26 +57,26 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th class="hide-mobile">ID</th>
                         <th>Дата</th>
                         <th>Пара</th>
                         <th>Сторона</th>
-                        <th>Тип</th>
+                        <th class="hide-mobile">Тип</th>
                         <th>Цена</th>
-                        <th>Кол-во</th>
+                        <th class="hide-mobile">Кол-во</th>
                         <th>Статус</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for o in orders %}
                     <tr>
-                        <td class="font-mono">{{ o.id }}</td>
+                        <td class="font-mono hide-mobile">{{ o.id }}</td>
                         <td>{{ o.created_at|date:"d.m.Y H:i" }}</td>
                         <td class="font-mono">{{ o.symbol }}</td>
                         <td><span class="badge badge--{% if o.side == 'BUY' %}success{% else %}danger{% endif %}">{% if o.side == 'BUY' %}Покупка{% else %}Продажа{% endif %}</span></td>
-                        <td>{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
+                        <td class="hide-mobile">{% if o.order_type == 'MARKET' %}Рыночный{% else %}Лимитный{% endif %}</td>
                         <td class="font-mono">{{ o.price|default:"-" }}</td>
-                        <td class="font-mono">{{ o.quantity }}</td>
+                        <td class="font-mono hide-mobile">{{ o.quantity }}</td>
                         <td><span class="badge badge--{% if o.status == 'FILLED' %}success{% elif o.status == 'OPEN' %}info{% else %}warning{% endif %}">{% if o.status == 'FILLED' %}Исполнен{% elif o.status == 'OPEN' %}Открыт{% elif o.status == 'CANCELLED' %}Отменён{% else %}{{ o.status }}{% endif %}</span></td>
                     </tr>
                     {% empty %}
